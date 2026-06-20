@@ -68,13 +68,40 @@ public sealed class CustomerService : ICustomerService
         if (existing is null || existing.IsDeleted)
             return false;
 
-        // Soft delete so the removal can be propagated to the cloud later.
-        existing.IsDeleted = true;
-        existing.UpdatedAt = DateTime.UtcNow;
-        existing.SyncStatus = SyncStatus.Pending;
+        var now = DateTime.UtcNow;
 
-        await connection.UpdateAsync(existing);
+        // Cascade the soft-delete to the customer's measurement sets and their
+        // designs so we leave no orphaned records and the deletions sync too.
+        var sets = await connection.Table<MeasurementSet>()
+            .Where(m => m.CustomerId == id && !m.IsDeleted)
+            .ToListAsync();
+
+        var setIds = sets.Select(s => s.Id).ToList();
+        var designs = setIds.Count == 0
+            ? new List<DesignPreference>()
+            : await connection.Table<DesignPreference>()
+                .Where(d => !d.IsDeleted && setIds.Contains(d.MeasurementSetId))
+                .ToListAsync();
+
+        SoftDelete(existing, now);
+        foreach (var set in sets) SoftDelete(set, now);
+        foreach (var design in designs) SoftDelete(design, now);
+
+        await connection.RunInTransactionAsync(tran =>
+        {
+            tran.Update(existing);
+            foreach (var set in sets) tran.Update(set);
+            foreach (var design in designs) tran.Update(design);
+        });
+
         return true;
+    }
+
+    private static void SoftDelete(EntityBase entity, DateTime nowUtc)
+    {
+        entity.IsDeleted = true;
+        entity.UpdatedAt = nowUtc;
+        entity.SyncStatus = SyncStatus.Pending;
     }
 
     public async Task<Customer?> GetByIdAsync(string id)

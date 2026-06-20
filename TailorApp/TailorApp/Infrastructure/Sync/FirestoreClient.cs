@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -10,11 +11,14 @@ namespace TailorApp.Infrastructure.Sync;
 
 /// <summary>
 /// REST implementation of <see cref="IFirestoreClient"/>. Converts between CLR
-/// field maps and Firestore's typed-value JSON, and authenticates every call
-/// with a Bearer ID token from <see cref="IFirebaseAuthService"/>.
+/// field maps and Firestore's typed-value JSON, authenticates every call with a
+/// Bearer ID token, and retries transient failures (timeouts, 429, 5xx) with
+/// exponential backoff. Non-transient failures throw <see cref="FirestoreException"/>.
 /// </summary>
 public sealed class FirestoreClient : IFirestoreClient
 {
+    private const int MaxAttempts = 3;
+
     private readonly HttpClient _http;
     private readonly FirebaseOptions _options;
     private readonly IFirebaseAuthService _auth;
@@ -35,16 +39,17 @@ public sealed class FirestoreClient : IFirestoreClient
         var (token, uid) = await RequireAuthAsync(cancellationToken).ConfigureAwait(false);
 
         var url = $"{DocumentsBase}/shops/{uid}/{collection}/{documentId}";
-        var body = new JsonObject { ["fields"] = BuildFields(fields) };
+        var json = new JsonObject { ["fields"] = BuildFields(fields) }.ToJsonString();
 
-        using var request = new HttpRequestMessage(HttpMethod.Patch, url)
+        await SendWithRetryAsync(() =>
         {
-            Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json")
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync(response, "upsert document", cancellationToken).ConfigureAwait(false);
+            var request = new HttpRequestMessage(HttpMethod.Patch, url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return request;
+        }, "upsert document", cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyList<FirestoreDocument>> GetChangedSinceAsync(string collection,
@@ -76,22 +81,22 @@ public sealed class FirestoreClient : IFirestoreClient
                     }
                 }
             }
-        };
+        }.ToJsonString();
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, url)
+        var responseBody = await SendWithRetryAsync(() =>
         {
-            Content = new StringContent(query.ToJsonString(), Encoding.UTF8, "application/json")
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(query, Encoding.UTF8, "application/json")
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return request;
+        }, "query documents", cancellationToken).ConfigureAwait(false);
 
-        using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync(response, "query documents", cancellationToken).ConfigureAwait(false);
-
-        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        return ParseQueryResults(json);
+        return ParseQueryResults(responseBody);
     }
 
-    // ---- Auth / HTTP helpers ----
+    // ---- Auth ----
 
     private async Task<(string Token, string Uid)> RequireAuthAsync(CancellationToken cancellationToken)
     {
@@ -101,44 +106,75 @@ public sealed class FirestoreClient : IFirestoreClient
         return (token, _auth.CurrentUserId!);
     }
 
-    private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    // ---- HTTP send with transient retry ----
+
+    private async Task<string> SendWithRetryAsync(Func<HttpRequestMessage> requestFactory, string operation, CancellationToken cancellationToken)
     {
-        try
+        for (var attempt = 1; ; attempt++)
         {
-            return await _http.SendAsync(request, cancellationToken).ConfigureAwait(false);
-        }
-        catch (HttpRequestException ex)
-        {
-            throw new FirestoreException("Could not reach Firestore. Check your internet connection.", ex);
+            try
+            {
+                using var request = requestFactory();
+                using var response = await _http.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+                if (IsTransient(response.StatusCode) && attempt < MaxAttempts)
+                {
+                    await DelayForAttemptAsync(attempt, cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
+
+                throw await BuildExceptionAsync(response, operation, cancellationToken).ConfigureAwait(false);
+            }
+            catch (HttpRequestException) when (attempt < MaxAttempts)
+            {
+                // Transient transport error — back off and retry.
+                await DelayForAttemptAsync(attempt, cancellationToken).ConfigureAwait(false);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new FirestoreException("Could not reach Firestore. Check your internet connection.", ex);
+            }
         }
     }
 
-    private static async Task EnsureSuccessAsync(HttpResponseMessage response, string operation, CancellationToken cancellationToken)
-    {
-        if (response.IsSuccessStatusCode)
-            return;
+    private static Task DelayForAttemptAsync(int attempt, CancellationToken cancellationToken)
+        => Task.Delay(TimeSpan.FromMilliseconds(500 * Math.Pow(2, attempt - 1)), cancellationToken);
 
+    private static bool IsTransient(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.RequestTimeout => true,        // 408
+        (HttpStatusCode)429 => true,                  // Too Many Requests
+        HttpStatusCode.InternalServerError => true,   // 500
+        HttpStatusCode.BadGateway => true,            // 502
+        HttpStatusCode.ServiceUnavailable => true,    // 503
+        HttpStatusCode.GatewayTimeout => true,        // 504
+        _ => false
+    };
+
+    private static async Task<FirestoreException> BuildExceptionAsync(HttpResponseMessage response, string operation, CancellationToken cancellationToken)
+    {
         string detail;
         try
         {
             var payload = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            var node = JsonNode.Parse(payload);
-            detail = node?["error"]?["message"]?.GetValue<string>() ?? payload;
+            detail = JsonNode.Parse(payload)?["error"]?["message"]?.GetValue<string>() ?? payload;
         }
         catch
         {
             detail = response.ReasonPhrase ?? "unknown error";
         }
 
-        throw new FirestoreException($"Firestore failed to {operation} ({(int)response.StatusCode}): {detail}");
+        return new FirestoreException($"Firestore failed to {operation} ({(int)response.StatusCode}): {detail}");
     }
 
     // ---- Query parsing ----
 
     private static IReadOnlyList<FirestoreDocument> ParseQueryResults(string json)
     {
-        var root = JsonNode.Parse(json) as JsonArray;
-        if (root is null)
+        if (JsonNode.Parse(json) is not JsonArray root)
             return Array.Empty<FirestoreDocument>();
 
         var results = new List<FirestoreDocument>();

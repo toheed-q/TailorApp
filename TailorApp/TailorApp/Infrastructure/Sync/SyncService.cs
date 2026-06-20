@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SQLite;
 using TailorApp.Application.Interfaces;
 using TailorApp.Application.Models;
@@ -23,6 +24,7 @@ public sealed class SyncService : ISyncService
     private readonly IFirestoreClient _firestore;
     private readonly IFirebaseAuthService _auth;
     private readonly IConnectivityService _connectivity;
+    private readonly ILogger<SyncService> _logger;
 
     private readonly SemaphoreSlim _syncLock = new(1, 1);
     private bool _autoSyncStarted;
@@ -31,12 +33,14 @@ public sealed class SyncService : ISyncService
         IDatabaseService database,
         IFirestoreClient firestore,
         IFirebaseAuthService auth,
-        IConnectivityService connectivity)
+        IConnectivityService connectivity,
+        ILogger<SyncService> logger)
     {
         _database = database;
         _firestore = firestore;
         _auth = auth;
         _connectivity = connectivity;
+        _logger = logger;
     }
 
     public bool IsSyncing { get; private set; }
@@ -66,16 +70,19 @@ public sealed class SyncService : ISyncService
             if (!_connectivity.IsConnected)
                 return Complete(SyncResult.Failed("No internet connection.", DateTime.UtcNow));
 
+            _logger.LogInformation("Sync started.");
             var connection = await _database.GetConnectionAsync().ConfigureAwait(false);
 
             // Push first so local edits win ties, then pull remote changes.
             var pushed = await PushAllAsync(connection, cancellationToken).ConfigureAwait(false);
             var pulled = await PullAllAsync(connection, cancellationToken).ConfigureAwait(false);
 
+            _logger.LogInformation("Sync completed: pushed {Pushed}, pulled {Pulled}.", pushed, pulled);
             return Complete(SyncResult.Ok(pushed, pulled, DateTime.UtcNow));
         }
         catch (Exception ex)
         {
+            _logger.LogWarning(ex, "Sync failed: {Message}", ex.Message);
             return Complete(SyncResult.Failed(ex.Message, DateTime.UtcNow));
         }
         finally

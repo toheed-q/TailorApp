@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using TailorApp.Application.Interfaces;
 using TailorApp.Infrastructure;
 
@@ -47,9 +48,12 @@ namespace TailorApp
 
                 services.GetRequiredService<ISyncService>().StartAutoSync();
             }
-            catch
+            catch (Exception ex)
             {
                 // Best-effort startup init; the app remains fully usable offline.
+                services.GetService<ILoggerFactory>()?
+                    .CreateLogger("Startup")
+                    .LogWarning(ex, "Startup initialization failed: {Message}", ex.Message);
             }
         }
     }
