@@ -1,17 +1,23 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject ILocalizationService Loc
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
+<div dir="@Loc.Direction"
+     class="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col bg-cream">
+    <main class="flex-1 px-5 pb-28 pt-[calc(0.75rem+env(safe-area-inset-top))]">
+        @Body
     </main>
+
+    <BottomNav />
 </div>
+
+@code {
+    protected override void OnInitialized()
+        => Loc.LanguageChanged += OnLanguageChanged;
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Loc.LanguageChanged -= OnLanguageChanged;
+}

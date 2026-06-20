@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Self-hosted fonts (offline-first; copied from @fontsource) ---- */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/playfair-display-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/playfair-display-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/playfair-display-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Noto Nastaliq Urdu";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/noto-nastaliq-urdu-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Noto Nastaliq Urdu";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/noto-nastaliq-urdu-700.woff2") format("woff2");
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* RTL: Urdu uses the Nastaliq face. Set dir="rtl" on a container to enable. */
+  [dir="rtl"] {
+    @apply font-urdu;
+  }
+}
+
+@layer components {
+  .app-card {
+    @apply rounded-card bg-cream-card shadow-card;
+  }
+  .icon-tile {
+    @apply flex h-12 w-12 items-center justify-center rounded-tile;
+  }
+  .app-input {
+    @apply w-full rounded-tile border border-cream-border bg-cream-card px-4 py-3 text-ink;
+    @apply placeholder:text-subtle focus:border-brick focus:outline-none;
+  }
+}
+
+/* ---- Blazor host chrome (kept from template) ---- */
+#blazor-error-ui {
+  color-scheme: light only;
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+#blazor-error-ui .dismiss {
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem;
+}

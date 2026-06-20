@@ -1,0 +1,83 @@
+@page "/customers/{Id}"
+@implements IDisposable
+@inject ICustomerService CustomerService
+@inject ILocalizationService Loc
+@inject NavigationManager Nav
+
+<!-- Header -->
+<header class="flex items-center gap-2 pt-2">
+    <button type="button" @onclick='() => Nav.NavigateTo("/customers")' aria-label="@Loc["Customer.Plural"]"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-ink">
+        <svg class="h-6 w-6 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6" /></svg>
+    </button>
+    <h1 class="font-serif text-2xl font-bold text-ink">@Loc["Customer.Title"]</h1>
+</header>
+
+@if (_loading)
+{
+    <div class="mt-16 text-center text-subtle">@Loc["Common.Loading"]</div>
+}
+else if (_customer is null)
+{
+    <div class="app-card mt-6 px-4 py-8 text-center text-sm text-subtle">@Loc["Common.NoResults"]</div>
+}
+else
+{
+    <!-- Identity -->
+    <div class="mt-6 flex items-center gap-4">
+        <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-blush text-lg font-semibold text-brick">
+            @DisplayFormat.Initials(_customer.Name)
+        </span>
+        <div class="min-w-0">
+            <h2 class="truncate font-serif text-xl font-bold text-ink">@_customer.Name</h2>
+            <p class="mt-0.5 text-sm text-subtle">
+                @string.Format(Loc["Customers.UpdatedFormat"], DisplayFormat.RelativeTime(_customer.UpdatedAt))
+            </p>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="app-card mt-5 divide-y divide-cream-line">
+        <DetailRow Label="@Loc["Customer.Phone"]" Value="@_customer.PhoneNumber" />
+        <DetailRow Label="@Loc["Customer.Address"]" Value="@_customer.Address" />
+        <DetailRow Label="@Loc["Customer.Notes"]" Value="@_customer.Notes" />
+    </div>
+
+    <p class="mt-5 text-center text-xs text-subtle">@Loc["Customer.HistorySoon"]</p>
+
+    <!-- Edit -->
+    <a href="@($"/customers/{_customer.Id}/edit")"
+       class="mt-5 flex items-center justify-center gap-2 rounded-full bg-brick py-3 text-sm font-medium text-white">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 5.5 18.5 9.5" /><path d="M4 20l4-1L19 8a2 2 0 0 0-3-3L5 16l-1 4Z" />
+        </svg>
+        @Loc["Common.Edit"]
+    </a>
+
+    <div class="h-20"></div>
+}
+
+@code {
+    [Parameter] public string? Id { get; set; }
+
+    private Customer? _customer;
+    private bool _loading = true;
+
+    protected override void OnInitialized()
+        => Loc.LanguageChanged += OnLanguageChanged;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        _customer = Id is null ? null : await CustomerService.GetByIdAsync(Id);
+        _loading = false;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Loc.LanguageChanged -= OnLanguageChanged;
+}

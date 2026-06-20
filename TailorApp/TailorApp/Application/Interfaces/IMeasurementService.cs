@@ -29,4 +29,7 @@ public interface IMeasurementService
     /// its design. Designs are fetched in a single batched query (no N+1).
     /// </summary>
     Task<IReadOnlyList<MeasurementSetWithDesign>> GetHistoryAsync(string customerId);
+
+    /// <summary>Count of non-deleted measurement sets created within the last <paramref name="days"/> days.</summary>
+    Task<int> CountRecentAsync(int days);
 }

@@ -1,0 +1,265 @@
+@page "/customers"
+@implements IDisposable
+@inject ICustomerService CustomerService
+@inject ILocalizationService Loc
+@inject NavigationManager Nav
+
+<!-- Header -->
+<header class="flex items-center justify-between pt-2">
+    <h1 class="font-serif text-2xl font-bold text-ink">@Loc["Customer.Plural"]</h1>
+    <button type="button" @onclick="FocusSearchAsync"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-ink">
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7" /><path d="m20 20-3.2-3.2" />
+        </svg>
+    </button>
+</header>
+
+<!-- Search -->
+<div class="mt-4 flex w-full items-center gap-3 rounded-full bg-cream-card px-5 py-3.5 shadow-card">
+    <svg class="h-5 w-5 shrink-0 text-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7" /><path d="m20 20-3.2-3.2" />
+    </svg>
+    <input @ref="_searchInput" @bind="_query" @bind:event="oninput" type="text"
+           placeholder="@Loc["Home.SearchPlaceholder"]"
+           class="w-full bg-transparent text-ink placeholder:text-subtle focus:outline-none" />
+    @if (!string.IsNullOrEmpty(_query))
+    {
+        <button type="button" @onclick="ClearSearch" class="shrink-0 text-subtle">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="M6 6 18 18" /><path d="M18 6 6 18" /></svg>
+        </button>
+    }
+</div>
+
+<!-- Filters + count -->
+<div class="mt-4 flex items-center gap-2">
+    <button type="button" @onclick="() => _filter = Filter.All" class="@ChipClass(Filter.All)">@Loc["Customers.FilterAll"]</button>
+    <button type="button" @onclick="() => _filter = Filter.Recent" class="@ChipClass(Filter.Recent)">@Loc["Customers.FilterRecent"]</button>
+    <button type="button" @onclick="() => _filter = Filter.AZ" class="@ChipClass(Filter.AZ)">@Loc["Customers.FilterAZ"]</button>
+    <span class="ms-auto text-sm text-subtle">@CountLabel</span>
+</div>
+
+<!-- List -->
+<div class="mt-4 space-y-3">
+    @if (_loading)
+    {
+        <div class="app-card px-4 py-8 text-center text-sm text-subtle">@Loc["Common.Loading"]</div>
+    }
+    else if (!Filtered.Any())
+    {
+        <div class="app-card px-4 py-8 text-center text-sm text-subtle">
+            @(string.IsNullOrWhiteSpace(_query) ? Loc["Customers.Empty"] : Loc["Common.NoResults"])
+        </div>
+    }
+    else
+    {
+        @foreach (var customer in Filtered)
+        {
+            var isOpen = _openMenuId == customer.Id;
+            <div class="@CardClass(isOpen)">
+                <a href="@($"/customers/{customer.Id}")" class="flex flex-1 items-center gap-3 px-4 py-3.5">
+                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blush text-sm font-semibold text-brick">
+                        @DisplayFormat.Initials(customer.Name)
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate font-semibold text-ink">@customer.Name</p>
+                        <p class="mt-0.5 flex items-center gap-1.5 truncate text-sm text-subtle">
+                            @if (!string.IsNullOrWhiteSpace(customer.PhoneNumber))
+                            {
+                                <svg class="h-3.5 w-3.5 shrink-0 text-brick" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.2 2.2Z" />
+                                </svg>
+                                <span class="truncate">@customer.PhoneNumber</span>
+                                <span aria-hidden="true">·</span>
+                            }
+                            <span class="truncate">@string.Format(Loc["Customers.UpdatedFormat"], DisplayFormat.RelativeTime(customer.UpdatedAt))</span>
+                        </p>
+                    </div>
+                </a>
+
+                <!-- Kebab menu -->
+                <div class="relative shrink-0 pe-2">
+                    <button type="button" @onclick="() => ToggleMenu(customer.Id)" aria-label="@Loc["Common.More"]"
+                            class="flex h-10 w-10 items-center justify-center rounded-full text-subtle">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="12" cy="19" r="1.6" />
+                        </svg>
+                    </button>
+
+                    @if (isOpen)
+                    {
+                        <div class="absolute end-2 top-11 z-20 w-44 overflow-hidden rounded-card bg-cream-card py-1 shadow-card ring-1 ring-cream-border">
+                            <a href="@($"/customers/{customer.Id}")" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink">
+                                <svg class="h-5 w-5 text-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="9" r="3.2" /><path d="M5 19a7 7 0 0 1 14 0" />
+                                </svg>
+                                @Loc["Common.View"]
+                            </a>
+                            <a href="@($"/customers/{customer.Id}/edit")" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink">
+                                <svg class="h-5 w-5 text-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14.5 5.5 18.5 9.5" /><path d="M4 20l4-1L19 8a2 2 0 0 0-3-3L5 16l-1 4Z" />
+                                </svg>
+                                @Loc["Common.Edit"]
+                            </a>
+                            <div class="my-1 border-t border-cream-line"></div>
+                            <button type="button" @onclick="() => RequestDelete(customer.Id)"
+                                    class="flex w-full items-center gap-3 px-4 py-2.5 text-start text-sm text-brick">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 7h16" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                    <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+                                </svg>
+                                @Loc["Common.Delete"]
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        <div class="h-20"></div>
+    }
+</div>
+
+<!-- Click-away backdrop for the open menu -->
+@if (_openMenuId is not null)
+{
+    <button type="button" @onclick="CloseMenu" tabindex="-1" aria-hidden="true"
+            class="fixed inset-0 z-10 cursor-default"></button>
+}
+
+<!-- Floating Add customer button (aligned to the centered frame) -->
+<div class="pointer-events-none fixed inset-x-0 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-30 mx-auto flex max-w-md justify-end px-5">
+    <a href="/customers/new"
+       class="pointer-events-auto flex items-center gap-2 rounded-full bg-brick px-5 py-3.5 font-medium text-white shadow-card">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14" /><path d="M5 12h14" />
+        </svg>
+        @Loc["Home.AddCustomer"]
+    </a>
+</div>
+
+<!-- Delete confirmation -->
+@if (_pendingDeleteId is not null)
+{
+    <div class="fixed inset-0 z-40 flex items-center justify-center bg-ink/40 px-8">
+        <div class="w-full max-w-xs rounded-card bg-cream-card p-5 shadow-card">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blush text-brick">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7h16" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                    <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+                </svg>
+            </div>
+            <p class="mt-4 text-center text-sm text-ink">@Loc["Customer.DeleteConfirm"]</p>
+            <div class="mt-5 flex gap-3">
+                <button type="button" @onclick="CancelDelete"
+                        class="flex-1 rounded-full border border-cream-border py-2.5 text-sm font-medium text-ink">
+                    @Loc["Common.Cancel"]
+                </button>
+                <button type="button" @onclick="ConfirmDeleteAsync"
+                        class="flex-1 rounded-full bg-brick py-2.5 text-sm font-medium text-white">
+                    @Loc["Common.Delete"]
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private enum Filter { All, Recent, AZ }
+
+    private IReadOnlyList<Customer> _all = Array.Empty<Customer>();
+    private bool _loading = true;
+    private string _query = string.Empty;
+    private Filter _filter = Filter.All;
+    private string? _openMenuId;
+    private string? _pendingDeleteId;
+    private ElementReference _searchInput;
+
+    protected override void OnInitialized()
+        => Loc.LanguageChanged += OnLanguageChanged;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _all = await CustomerService.GetAllAsync();
+        _loading = false;
+    }
+
+    private IEnumerable<Customer> Filtered
+    {
+        get
+        {
+            IEnumerable<Customer> list = _all;
+
+            if (!string.IsNullOrWhiteSpace(_query))
+            {
+                var q = _query.Trim();
+                list = list.Where(c =>
+                    c.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    (c.PhoneNumber?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            return _filter switch
+            {
+                Filter.Recent => list
+                    .Where(c => c.UpdatedAt >= DateTime.UtcNow.AddDays(-30))
+                    .OrderByDescending(c => c.UpdatedAt),
+                Filter.AZ => list.OrderBy(c => c.Name, StringComparer.CurrentCultureIgnoreCase),
+                _ => list.OrderByDescending(c => c.UpdatedAt),
+            };
+        }
+    }
+
+    private string CountLabel => string.Format(Loc["Customers.CountFormat"], Filtered.Count());
+
+    private string ChipClass(Filter filter)
+    {
+        var state = _filter == filter
+            ? "bg-brick text-white"
+            : "bg-cream-card text-ink";
+        return $"rounded-full px-4 py-1.5 text-sm font-medium shadow-card {state}";
+    }
+
+    private static string CardClass(bool isOpen)
+    {
+        var accent = isOpen ? "border-s-4 border-brick" : "";
+        return $"app-card relative flex items-center {accent}";
+    }
+
+    private Task FocusSearchAsync() => _searchInput.FocusAsync().AsTask();
+
+    private void ClearSearch() => _query = string.Empty;
+
+    private void ToggleMenu(string id) => _openMenuId = _openMenuId == id ? null : id;
+
+    private void CloseMenu() => _openMenuId = null;
+
+    private void RequestDelete(string id)
+    {
+        _pendingDeleteId = id;
+        _openMenuId = null;
+    }
+
+    private void CancelDelete() => _pendingDeleteId = null;
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_pendingDeleteId is null)
+            return;
+
+        await CustomerService.DeleteAsync(_pendingDeleteId);
+        _all = _all.Where(c => c.Id != _pendingDeleteId).ToList();
+        _pendingDeleteId = null;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Loc.LanguageChanged -= OnLanguageChanged;
+}

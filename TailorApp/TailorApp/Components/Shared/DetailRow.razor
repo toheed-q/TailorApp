@@ -1,0 +1,14 @@
+@* A labelled read-only field row used on detail screens. *@
+<div class="px-4 py-3">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">@Label</p>
+    <p class="mt-1 text-sm @(HasValue ? "text-ink" : "text-subtle")">
+        @(HasValue ? Value : "—")
+    </p>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Value { get; set; }
+
+    private bool HasValue => !string.IsNullOrWhiteSpace(Value);
+}

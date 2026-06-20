@@ -76,4 +76,11 @@
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
     </ItemGroup>
 
+    <!-- Regenerate Tailwind CSS during build when the Node toolchain is present
+         (after `npm install`). Other environments use the committed wwwroot/css/app.css. -->
+    <Target Name="BuildTailwindCss" BeforeTargets="BeforeBuild"
+            Condition="Exists('$(MSBuildProjectDirectory)/node_modules')">
+        <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    </Target>
+
 </Project>

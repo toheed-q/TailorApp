@@ -1,0 +1,18 @@
+{
+  "name": "tailorapp-ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tailwind CSS build pipeline for the Tailor App (Darzi) MAUI Blazor UI.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./wwwroot/css/app.input.css -o ./wwwroot/css/app.css --minify",
+    "watch:css": "tailwindcss -i ./wwwroot/css/app.input.css -o ./wwwroot/css/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.1.1",
+    "@fontsource/playfair-display": "^5.1.1",
+    "@fontsource/noto-nastaliq-urdu": "^5.1.1"
+  }
+}

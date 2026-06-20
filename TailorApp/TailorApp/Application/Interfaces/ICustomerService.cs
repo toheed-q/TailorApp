@@ -25,6 +25,12 @@ public interface ICustomerService
     /// <summary>Returns all non-deleted customers, ordered by name.</summary>
     Task<IReadOnlyList<Customer>> GetAllAsync();
 
+    /// <summary>Count of non-deleted customers (efficient COUNT query).</summary>
+    Task<int> CountAsync();
+
+    /// <summary>Most recently added non-deleted customers, newest first.</summary>
+    Task<IReadOnlyList<Customer>> GetRecentAsync(int take);
+
     /// <summary>
     /// Searches non-deleted customers by name or phone (case-insensitive contains).
     /// An empty query returns all customers.

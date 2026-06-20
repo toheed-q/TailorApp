@@ -155,6 +155,15 @@ public sealed class MeasurementService : IMeasurementService
             .ToList();
     }
 
+    public async Task<int> CountRecentAsync(int days)
+    {
+        var connection = await _database.GetConnectionAsync();
+        var since = DateTime.UtcNow.AddDays(-Math.Abs(days));
+        return await connection.Table<MeasurementSet>()
+            .Where(m => !m.IsDeleted && m.CreatedAt >= since)
+            .CountAsync();
+    }
+
     private static Task<DesignPreference?> FindDesignAsync(SQLite.SQLiteAsyncConnection connection, string measurementSetId)
         => connection.Table<DesignPreference>()
             .Where(d => d.MeasurementSetId == measurementSetId && !d.IsDeleted)

@@ -1,0 +1,141 @@
+@page "/customers/new"
+@page "/customers/{Id}/edit"
+@implements IDisposable
+@inject ICustomerService CustomerService
+@inject ILocalizationService Loc
+@inject NavigationManager Nav
+
+<!-- Header -->
+<header class="flex items-center gap-2 pt-2">
+    <button type="button" @onclick="GoBack" aria-label="@Loc["Common.Cancel"]"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-ink">
+        <svg class="h-6 w-6 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6" /></svg>
+    </button>
+    <h1 class="font-serif text-2xl font-bold text-ink">
+        @(_isEdit ? Loc["Customer.Edit"] : Loc["Customer.Add"])
+    </h1>
+</header>
+
+@if (_loading)
+{
+    <div class="mt-16 text-center text-subtle">@Loc["Common.Loading"]</div>
+}
+else if (_notFound)
+{
+    <div class="app-card mt-6 px-4 py-8 text-center text-sm text-subtle">@Loc["Common.NoResults"]</div>
+}
+else
+{
+    <EditForm Model="_input" OnValidSubmit="SaveAsync" class="mt-6 space-y-4">
+        <DataAnnotationsValidator />
+
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Customer.Name"]</label>
+            <InputText @bind-Value="_input.Name" class="app-input" autocomplete="off" />
+            <ValidationMessage For="() => _input.Name" class="mt-1 block text-xs text-brick" />
+        </div>
+
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Customer.Phone"]</label>
+            <InputText @bind-Value="_input.PhoneNumber" type="tel" class="app-input" autocomplete="off" />
+            <ValidationMessage For="() => _input.PhoneNumber" class="mt-1 block text-xs text-brick" />
+        </div>
+
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Customer.Address"]</label>
+            <InputText @bind-Value="_input.Address" class="app-input" autocomplete="off" />
+            <ValidationMessage For="() => _input.Address" class="mt-1 block text-xs text-brick" />
+        </div>
+
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Customer.Notes"]</label>
+            <InputTextArea @bind-Value="_input.Notes" rows="3" class="app-input" />
+            <ValidationMessage For="() => _input.Notes" class="mt-1 block text-xs text-brick" />
+        </div>
+
+        @if (_error is not null)
+        {
+            <p class="text-sm text-brick">@_error</p>
+        }
+
+        <div class="flex gap-3 pt-2">
+            <button type="button" @onclick="GoBack"
+                    class="flex-1 rounded-full border border-cream-border py-3 text-sm font-medium text-ink">
+                @Loc["Common.Cancel"]
+            </button>
+            <button type="submit" disabled="@_saving"
+                    class="flex-1 rounded-full bg-brick py-3 text-sm font-medium text-white disabled:opacity-60">
+                @Loc["Common.Save"]
+            </button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public string? Id { get; set; }
+
+    private readonly CustomerInput _input = new();
+    private bool _isEdit;
+    private bool _loading;
+    private bool _saving;
+    private bool _notFound;
+    private string? _error;
+
+    protected override void OnInitialized()
+        => Loc.LanguageChanged += OnLanguageChanged;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isEdit = !string.IsNullOrEmpty(Id);
+        if (!_isEdit)
+            return;
+
+        _loading = true;
+        var existing = await CustomerService.GetByIdAsync(Id!);
+        if (existing is null)
+        {
+            _notFound = true;
+        }
+        else
+        {
+            _input.Name = existing.Name;
+            _input.PhoneNumber = existing.PhoneNumber;
+            _input.Address = existing.Address;
+            _input.Notes = existing.Notes;
+        }
+        _loading = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        _saving = true;
+        _error = null;
+        try
+        {
+            if (_isEdit)
+                await CustomerService.UpdateAsync(Id!, _input);
+            else
+                await CustomerService.AddAsync(_input);
+
+            Nav.NavigateTo("/customers");
+        }
+        catch (ValidationFailedException ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void GoBack()
+        => Nav.NavigateTo(_isEdit ? $"/customers/{Id}" : "/customers");
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Loc.LanguageChanged -= OnLanguageChanged;
+}

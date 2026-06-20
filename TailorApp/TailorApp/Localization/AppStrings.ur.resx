@@ -20,6 +20,8 @@
   <data name="Common.Delete" xml:space="preserve"><value>حذف کریں</value></data>
   <data name="Common.Edit" xml:space="preserve"><value>ترمیم کریں</value></data>
   <data name="Common.Add" xml:space="preserve"><value>شامل کریں</value></data>
+  <data name="Common.View" xml:space="preserve"><value>دیکھیں</value></data>
+  <data name="Common.More" xml:space="preserve"><value>مزید</value></data>
   <data name="Common.Search" xml:space="preserve"><value>تلاش کریں</value></data>
   <data name="Common.Yes" xml:space="preserve"><value>ہاں</value></data>
   <data name="Common.No" xml:space="preserve"><value>نہیں</value></data>
@@ -39,6 +41,14 @@
   <data name="Customer.Add" xml:space="preserve"><value>نیا گاہک</value></data>
   <data name="Customer.Edit" xml:space="preserve"><value>گاہک میں ترمیم</value></data>
   <data name="Customer.DeleteConfirm" xml:space="preserve"><value>کیا آپ واقعی اس گاہک کو حذف کرنا چاہتے ہیں؟</value></data>
+  <data name="Customer.HistorySoon" xml:space="preserve"><value>ناپ اور تاریخ جلد آ رہی ہے</value></data>
+
+  <data name="Customers.FilterAll" xml:space="preserve"><value>سب</value></data>
+  <data name="Customers.FilterRecent" xml:space="preserve"><value>حالیہ</value></data>
+  <data name="Customers.FilterAZ" xml:space="preserve"><value>الف۔ے</value></data>
+  <data name="Customers.CountFormat" xml:space="preserve"><value>{0} گاہک</value></data>
+  <data name="Customers.Empty" xml:space="preserve"><value>ابھی کوئی گاہک نہیں</value></data>
+  <data name="Customers.UpdatedFormat" xml:space="preserve"><value>اپ ڈیٹ {0}</value></data>
 
   <data name="Measurement.Title" xml:space="preserve"><value>ناپ</value></data>
   <data name="Measurement.Kameez" xml:space="preserve"><value>قمیض</value></data>
@@ -74,4 +84,21 @@
   <data name="Auth.SignOut" xml:space="preserve"><value>سائن آؤٹ</value></data>
   <data name="Auth.Email" xml:space="preserve"><value>ای میل</value></data>
   <data name="Auth.Password" xml:space="preserve"><value>پاس ورڈ</value></data>
+
+  <data name="Brand.Tagline" xml:space="preserve"><value>ٹیلر اسٹوڈیو</value></data>
+
+  <data name="Nav.Home" xml:space="preserve"><value>ہوم</value></data>
+  <data name="Nav.Customers" xml:space="preserve"><value>گاہک</value></data>
+  <data name="Nav.Settings" xml:space="preserve"><value>ترتیبات</value></data>
+
+  <data name="Home.SearchPlaceholder" xml:space="preserve"><value>نام یا فون سے تلاش کریں</value></data>
+  <data name="Home.QuickActions" xml:space="preserve"><value>فوری اقدامات</value></data>
+  <data name="Home.AddCustomer" xml:space="preserve"><value>گاہک شامل کریں</value></data>
+  <data name="Home.ViewCustomers" xml:space="preserve"><value>گاہک دیکھیں</value></data>
+  <data name="Home.Recent" xml:space="preserve"><value>حالیہ</value></data>
+  <data name="Home.Overview" xml:space="preserve"><value>خلاصہ</value></data>
+  <data name="Home.TotalCustomers" xml:space="preserve"><value>کل گاہک</value></data>
+  <data name="Home.RecentOrders" xml:space="preserve"><value>حالیہ آرڈرز</value></data>
+  <data name="Home.RecentCustomers" xml:space="preserve"><value>حالیہ گاہک</value></data>
+  <data name="Home.ViewAll" xml:space="preserve"><value>سب دیکھیں</value></data>
 </root>

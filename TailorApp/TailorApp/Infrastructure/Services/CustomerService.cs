@@ -120,6 +120,24 @@ public sealed class CustomerService : ICustomerService
             .ToListAsync();
     }
 
+    public async Task<int> CountAsync()
+    {
+        var connection = await _database.GetConnectionAsync();
+        return await connection.Table<Customer>()
+            .Where(c => !c.IsDeleted)
+            .CountAsync();
+    }
+
+    public async Task<IReadOnlyList<Customer>> GetRecentAsync(int take)
+    {
+        var connection = await _database.GetConnectionAsync();
+        return await connection.Table<Customer>()
+            .Where(c => !c.IsDeleted)
+            .OrderByDescending(c => c.CreatedAt)
+            .Take(take)
+            .ToListAsync();
+    }
+
     public async Task<IReadOnlyList<Customer>> SearchAsync(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
