@@ -39,6 +39,9 @@ namespace TailorApp
         {
             try
             {
+                // Apply the saved language/culture before any UI renders.
+                services.GetRequiredService<ILocalizationService>().Initialize();
+
                 await services.GetRequiredService<IFirebaseAuthService>()
                     .TryRestoreSessionAsync();
 

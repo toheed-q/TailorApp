@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="App.Name" xml:space="preserve"><value>درزی ایپ</value></data>
+
+  <data name="Common.Save" xml:space="preserve"><value>محفوظ کریں</value></data>
+  <data name="Common.Cancel" xml:space="preserve"><value>منسوخ کریں</value></data>
+  <data name="Common.Delete" xml:space="preserve"><value>حذف کریں</value></data>
+  <data name="Common.Edit" xml:space="preserve"><value>ترمیم کریں</value></data>
+  <data name="Common.Add" xml:space="preserve"><value>شامل کریں</value></data>
+  <data name="Common.Search" xml:space="preserve"><value>تلاش کریں</value></data>
+  <data name="Common.Yes" xml:space="preserve"><value>ہاں</value></data>
+  <data name="Common.No" xml:space="preserve"><value>نہیں</value></data>
+  <data name="Common.Confirm" xml:space="preserve"><value>تصدیق کریں</value></data>
+  <data name="Common.Loading" xml:space="preserve"><value>لوڈ ہو رہا ہے...</value></data>
+  <data name="Common.NoResults" xml:space="preserve"><value>کوئی نتیجہ نہیں ملا</value></data>
+  <data name="Common.SyncNow" xml:space="preserve"><value>ابھی سنک کریں</value></data>
+  <data name="Common.Settings" xml:space="preserve"><value>ترتیبات</value></data>
+  <data name="Common.Language" xml:space="preserve"><value>زبان</value></data>
+
+  <data name="Customer.Title" xml:space="preserve"><value>گاہک</value></data>
+  <data name="Customer.Plural" xml:space="preserve"><value>گاہک</value></data>
+  <data name="Customer.Name" xml:space="preserve"><value>نام</value></data>
+  <data name="Customer.Phone" xml:space="preserve"><value>فون نمبر</value></data>
+  <data name="Customer.Address" xml:space="preserve"><value>پتہ</value></data>
+  <data name="Customer.Notes" xml:space="preserve"><value>نوٹس</value></data>
+  <data name="Customer.Add" xml:space="preserve"><value>نیا گاہک</value></data>
+  <data name="Customer.Edit" xml:space="preserve"><value>گاہک میں ترمیم</value></data>
+  <data name="Customer.DeleteConfirm" xml:space="preserve"><value>کیا آپ واقعی اس گاہک کو حذف کرنا چاہتے ہیں؟</value></data>
+
+  <data name="Measurement.Title" xml:space="preserve"><value>ناپ</value></data>
+  <data name="Measurement.Kameez" xml:space="preserve"><value>قمیض</value></data>
+  <data name="Measurement.Shalwar" xml:space="preserve"><value>شلوار</value></data>
+  <data name="Measurement.Length" xml:space="preserve"><value>لمبائی</value></data>
+  <data name="Measurement.Chest" xml:space="preserve"><value>چھاتی</value></data>
+  <data name="Measurement.Waist" xml:space="preserve"><value>کمر</value></data>
+  <data name="Measurement.Shoulder" xml:space="preserve"><value>کندھا</value></data>
+  <data name="Measurement.SleeveLength" xml:space="preserve"><value>آستین کی لمبائی</value></data>
+  <data name="Measurement.Collar" xml:space="preserve"><value>کالر</value></data>
+  <data name="Measurement.NeckWidth" xml:space="preserve"><value>گلے کی چوڑائی</value></data>
+  <data name="Measurement.Cuff" xml:space="preserve"><value>کف</value></data>
+  <data name="Measurement.Hip" xml:space="preserve"><value>کولہا</value></data>
+  <data name="Measurement.PanchaWidth" xml:space="preserve"><value>پانچے کی چوڑائی</value></data>
+  <data name="Measurement.Style" xml:space="preserve"><value>اسٹائل</value></data>
+  <data name="Measurement.Label" xml:space="preserve"><value>عنوان</value></data>
+
+  <data name="Design.Title" xml:space="preserve"><value>ڈیزائن کی ترجیحات</value></data>
+  <data name="Design.Collar" xml:space="preserve"><value>کالر ڈیزائن</value></data>
+  <data name="Design.Cuff" xml:space="preserve"><value>کف ڈیزائن</value></data>
+  <data name="Design.Pocket" xml:space="preserve"><value>جیب ڈیزائن</value></data>
+  <data name="Design.Button" xml:space="preserve"><value>بٹن اسٹائل</value></data>
+
+  <data name="History.Title" xml:space="preserve"><value>تاریخ</value></data>
+  <data name="History.Empty" xml:space="preserve"><value>ابھی کوئی ریکارڈ نہیں</value></data>
+
+  <data name="Sync.Success" xml:space="preserve"><value>سنک مکمل ہو گیا</value></data>
+  <data name="Sync.Failed" xml:space="preserve"><value>سنک ناکام ہو گیا</value></data>
+  <data name="Sync.InProgress" xml:space="preserve"><value>سنک جاری ہے...</value></data>
+  <data name="Sync.NotSignedIn" xml:space="preserve"><value>سائن ان نہیں ہے</value></data>
+
+  <data name="Auth.SignIn" xml:space="preserve"><value>سائن ان</value></data>
+  <data name="Auth.SignOut" xml:space="preserve"><value>سائن آؤٹ</value></data>
+  <data name="Auth.Email" xml:space="preserve"><value>ای میل</value></data>
+  <data name="Auth.Password" xml:space="preserve"><value>پاس ورڈ</value></data>
+</root>

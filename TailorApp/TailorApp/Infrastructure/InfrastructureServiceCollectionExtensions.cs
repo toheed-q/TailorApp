@@ -22,6 +22,7 @@ public static class InfrastructureServiceCollectionExtensions
         // Platform abstractions.
         services.AddSingleton(Connectivity.Current);
         services.AddSingleton<IConnectivityService, ConnectivityService>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
 
         // Feature services. Stateless, so singleton keeps allocations low.
         services.AddSingleton<ICustomerService, CustomerService>();
