@@ -48,6 +48,7 @@ public sealed class DatabaseService : IDatabaseService
             await connection.CreateTableAsync<Customer>().ConfigureAwait(false);
             await connection.CreateTableAsync<MeasurementSet>().ConfigureAwait(false);
             await connection.CreateTableAsync<DesignPreference>().ConfigureAwait(false);
+            await connection.CreateTableAsync<SyncMetadata>().ConfigureAwait(false);
 
             _connection = connection;
         }

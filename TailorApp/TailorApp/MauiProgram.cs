@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TailorApp.Application.Interfaces;
 using TailorApp.Infrastructure;
 
 namespace TailorApp
@@ -25,7 +26,28 @@ namespace TailorApp
     		builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+
+            // Resume a saved session and begin auto-sync when the device is online.
+            // Fire-and-forget: startup must not block on the network.
+            _ = InitializeAsync(app.Services);
+
+            return app;
+        }
+
+        private static async Task InitializeAsync(IServiceProvider services)
+        {
+            try
+            {
+                await services.GetRequiredService<IFirebaseAuthService>()
+                    .TryRestoreSessionAsync();
+
+                services.GetRequiredService<ISyncService>().StartAutoSync();
+            }
+            catch
+            {
+                // Best-effort startup init; the app remains fully usable offline.
+            }
         }
     }
 }

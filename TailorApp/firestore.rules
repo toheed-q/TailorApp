@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// Tailor App — Firestore security rules.
+//
+// All app data lives under shops/{uid}/... where {uid} is the signed-in shop
+// account's Firebase UID. A user may read/write ONLY their own shop subtree,
+// and only while authenticated. Everything else is denied by default.
+//
+// Paste this in Firebase console → Firestore Database → Rules → Publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /shops/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
