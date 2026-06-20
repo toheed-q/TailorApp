@@ -18,8 +18,9 @@ public static class InfrastructureServiceCollectionExtensions
 
         // Feature services. Stateless, so singleton keeps allocations low.
         services.AddSingleton<ICustomerService, CustomerService>();
+        services.AddSingleton<IMeasurementService, MeasurementService>();
 
-        // MeasurementService, SyncService, … registered here in later phases.
+        // SyncService, … registered here in later phases.
 
         return services;
     }
