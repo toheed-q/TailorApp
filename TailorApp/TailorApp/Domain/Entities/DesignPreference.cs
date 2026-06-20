@@ -11,7 +11,7 @@ namespace TailorApp.Domain.Entities;
 [Table("DesignPreferences")]
 public class DesignPreference : EntityBase
 {
-    /// <summary>Owning <see cref="MeasurementSet.Id"/>. Indexed for lookups.</summary>
+    /// <summary>Owning <see cref="MeasurementSet"/> id (<see cref="EntityBase.Id"/>). Indexed for lookups.</summary>
     [Indexed]
     public string MeasurementSetId { get; set; } = string.Empty;
 

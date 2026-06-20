@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TailorApp.Application.Interfaces;
 using TailorApp.Infrastructure.Data;
+using TailorApp.Infrastructure.Services;
 
 namespace TailorApp.Infrastructure;
 
@@ -15,8 +16,10 @@ public static class InfrastructureServiceCollectionExtensions
         // Singleton: one shared SQLite connection for the whole app lifetime.
         services.AddSingleton<IDatabaseService, DatabaseService>();
 
-        // Feature services (CustomerService, MeasurementService, SyncService, …)
-        // will be registered here in their respective phases.
+        // Feature services. Stateless, so singleton keeps allocations low.
+        services.AddSingleton<ICustomerService, CustomerService>();
+
+        // MeasurementService, SyncService, … registered here in later phases.
 
         return services;
     }

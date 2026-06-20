@@ -15,7 +15,7 @@ namespace TailorApp.Domain.Entities;
 [Table("MeasurementSets")]
 public class MeasurementSet : EntityBase
 {
-    /// <summary>Owning <see cref="Customer.Id"/>. Indexed for history lookups.</summary>
+    /// <summary>Owning <see cref="Customer"/> id (<see cref="EntityBase.Id"/>). Indexed for history lookups.</summary>
     [Indexed]
     public string CustomerId { get; set; } = string.Empty;
 
