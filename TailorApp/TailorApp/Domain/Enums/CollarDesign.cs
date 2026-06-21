@@ -7,7 +7,6 @@ public enum CollarDesign
 {
     Unspecified = 0,
     Ban = 1,
-    Sherwani = 2,
-    Shirt = 3,
-    Round = 4
+    Shirt = 2,
+    Sherwani = 3
 }

@@ -27,16 +27,21 @@ public class MeasurementSet : EntityBase
     public double? KameezLength { get; set; }
     public double? Chest { get; set; }
     public double? Waist { get; set; }
+    public double? KameezHip { get; set; }
     public double? Shoulder { get; set; }
     public double? SleeveLength { get; set; }
+    public double? ArmWidth { get; set; }
     public double? Collar { get; set; }
     public double? NeckWidth { get; set; }
     public double? Cuff { get; set; }
+    public bool FrontPocket { get; set; }
+    public bool SidePocket { get; set; }
 
     // ---- Shalwar ----
     public double? ShalwarLength { get; set; }
     public double? ShalwarWaist { get; set; }
     public double? Hip { get; set; }
+    public double? ThighWidth { get; set; }
     public double? PanchaWidth { get; set; }
     public ShalwarStyle ShalwarStyle { get; set; } = ShalwarStyle.Unspecified;
 }

@@ -71,6 +71,41 @@
   <data name="Design.Cuff" xml:space="preserve"><value>Cuff design</value></data>
   <data name="Design.Pocket" xml:space="preserve"><value>Pocket design</value></data>
   <data name="Design.Button" xml:space="preserve"><value>Button style</value></data>
+  <data name="Design.Ban" xml:space="preserve"><value>Ban</value></data>
+  <data name="Design.Shirt" xml:space="preserve"><value>Shirt</value></data>
+  <data name="Design.Sherwani" xml:space="preserve"><value>Sherwani</value></data>
+  <data name="Design.CuffPlain" xml:space="preserve"><value>Plain</value></data>
+  <data name="Design.CuffOne" xml:space="preserve"><value>1 button</value></data>
+  <data name="Design.CuffTwo" xml:space="preserve"><value>2 button</value></data>
+  <data name="Design.PocketPatch" xml:space="preserve"><value>Patch</value></data>
+  <data name="Design.PocketFlap" xml:space="preserve"><value>Flap</value></data>
+  <data name="Design.PocketVCut" xml:space="preserve"><value>V-cut</value></data>
+
+  <data name="Style.Simple" xml:space="preserve"><value>Simple</value></data>
+  <data name="Style.Pleated" xml:space="preserve"><value>Pleated</value></data>
+  <data name="Style.Bootcut" xml:space="preserve"><value>Bootcut</value></data>
+  <data name="Style.Patiala" xml:space="preserve"><value>Patiala</value></data>
+  <data name="Style.Aladdin" xml:space="preserve"><value>Aladdin</value></data>
+
+  <data name="Form.CustomerInfo" xml:space="preserve"><value>Customer information</value></data>
+  <data name="Form.CustomerName" xml:space="preserve"><value>Customer name</value></data>
+  <data name="Form.NamePlaceholder" xml:space="preserve"><value>e.g. Imran Khan</value></data>
+  <data name="Form.PhonePlaceholder" xml:space="preserve"><value>0301-2345678</value></data>
+  <data name="Form.AddressPlaceholder" xml:space="preserve"><value>Shop, street, city</value></data>
+  <data name="Form.NotesPlaceholder" xml:space="preserve"><value>Fit preferences, delivery date...</value></data>
+  <data name="Form.Optional" xml:space="preserve"><value>optional</value></data>
+  <data name="Form.Inches" xml:space="preserve"><value>inches</value></data>
+  <data name="Form.Unit" xml:space="preserve"><value>in</value></data>
+  <data name="Form.ArmWidth" xml:space="preserve"><value>Arm width</value></data>
+  <data name="Form.CollarSize" xml:space="preserve"><value>Collar size</value></data>
+  <data name="Form.CuffSize" xml:space="preserve"><value>Cuff size</value></data>
+  <data name="Form.ThighWidth" xml:space="preserve"><value>Thigh width</value></data>
+  <data name="Form.Bottom" xml:space="preserve"><value>Bottom (Pancha)</value></data>
+  <data name="Form.FrontPocket" xml:space="preserve"><value>Front pocket</value></data>
+  <data name="Form.SidePocket" xml:space="preserve"><value>Side pocket</value></data>
+  <data name="Form.ShalwarStyle" xml:space="preserve"><value>Shalwar style</value></data>
+  <data name="Form.Design" xml:space="preserve"><value>Design</value></data>
+  <data name="Form.SaveCustomer" xml:space="preserve"><value>Save customer</value></data>
 
   <data name="History.Title" xml:space="preserve"><value>History</value></data>
   <data name="History.Empty" xml:space="preserve"><value>No records yet</value></data>

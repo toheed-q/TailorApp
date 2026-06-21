@@ -176,15 +176,20 @@ public sealed class MeasurementService : IMeasurementService
         target.KameezLength = input.KameezLength;
         target.Chest = input.Chest;
         target.Waist = input.Waist;
+        target.KameezHip = input.KameezHip;
         target.Shoulder = input.Shoulder;
         target.SleeveLength = input.SleeveLength;
+        target.ArmWidth = input.ArmWidth;
         target.Collar = input.Collar;
         target.NeckWidth = input.NeckWidth;
         target.Cuff = input.Cuff;
+        target.FrontPocket = input.FrontPocket;
+        target.SidePocket = input.SidePocket;
 
         target.ShalwarLength = input.ShalwarLength;
         target.ShalwarWaist = input.ShalwarWaist;
         target.Hip = input.Hip;
+        target.ThighWidth = input.ThighWidth;
         target.PanchaWidth = input.PanchaWidth;
         target.ShalwarStyle = input.ShalwarStyle;
     }

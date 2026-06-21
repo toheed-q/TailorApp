@@ -6,8 +6,7 @@ namespace TailorApp.Domain.Enums;
 public enum CuffDesign
 {
     Unspecified = 0,
-    Single = 1,
-    Double = 2,
-    Round = 3,
-    Square = 4
+    Plain = 1,
+    OneButton = 2,
+    TwoButton = 3
 }

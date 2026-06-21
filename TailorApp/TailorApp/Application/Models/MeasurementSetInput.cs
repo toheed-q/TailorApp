@@ -24,11 +24,17 @@ public sealed class MeasurementSetInput
     [Range(0, 120, ErrorMessage = "Waist must be between 0 and 120.")]
     public double? Waist { get; set; }
 
+    [Range(0, 120, ErrorMessage = "Hip must be between 0 and 120.")]
+    public double? KameezHip { get; set; }
+
     [Range(0, 120, ErrorMessage = "Shoulder must be between 0 and 120.")]
     public double? Shoulder { get; set; }
 
     [Range(0, 120, ErrorMessage = "Sleeve length must be between 0 and 120.")]
     public double? SleeveLength { get; set; }
+
+    [Range(0, 120, ErrorMessage = "Arm width must be between 0 and 120.")]
+    public double? ArmWidth { get; set; }
 
     [Range(0, 120, ErrorMessage = "Collar must be between 0 and 120.")]
     public double? Collar { get; set; }
@@ -39,6 +45,10 @@ public sealed class MeasurementSetInput
     [Range(0, 120, ErrorMessage = "Cuff must be between 0 and 120.")]
     public double? Cuff { get; set; }
 
+    public bool FrontPocket { get; set; }
+
+    public bool SidePocket { get; set; }
+
     // ---- Shalwar (inches) ----
     [Range(0, 120, ErrorMessage = "Shalwar length must be between 0 and 120.")]
     public double? ShalwarLength { get; set; }
@@ -48,6 +58,9 @@ public sealed class MeasurementSetInput
 
     [Range(0, 120, ErrorMessage = "Hip must be between 0 and 120.")]
     public double? Hip { get; set; }
+
+    [Range(0, 120, ErrorMessage = "Thigh width must be between 0 and 120.")]
+    public double? ThighWidth { get; set; }
 
     [Range(0, 120, ErrorMessage = "Pancha width must be between 0 and 120.")]
     public double? PanchaWidth { get; set; }

@@ -1,0 +1,24 @@
+@* Selectable design option card with icon, label and a checkmark when chosen. *@
+<button type="button" @onclick="OnClick"
+        class="relative flex flex-col items-center justify-center gap-2 rounded-card border p-4 text-center transition-colors @CardClass">
+    @if (Selected)
+    {
+        <span class="absolute end-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-brick text-white">
+            <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 6" /></svg>
+        </span>
+    }
+    <span class="@(Selected ? "text-brick" : "text-ink")">@Icon</span>
+    <span class="text-sm font-medium @(Selected ? "text-brick" : "text-ink")">@Label</span>
+</button>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public bool Selected { get; set; }
+    [Parameter] public RenderFragment? Icon { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private string CardClass => Selected
+        ? "border-brick bg-blush/50 shadow-card"
+        : "border-cream-border bg-cream-card";
+}

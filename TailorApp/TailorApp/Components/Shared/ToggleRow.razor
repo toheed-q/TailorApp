@@ -1,0 +1,24 @@
+@* Full-width labelled on/off switch card (e.g. Front pocket · optional). *@
+@inject ILocalizationService Loc
+
+<button type="button" @onclick="Toggle"
+        class="app-card flex w-full items-center justify-between p-4 text-start">
+    <span class="text-sm font-medium text-ink">
+        @Label@if (Optional)
+        {
+            <span class="font-normal text-subtle"> · @Loc["Form.Optional"]</span>
+        }
+    </span>
+    <span class="relative h-6 w-11 shrink-0 rounded-full transition-colors @(Value ? "bg-brick" : "bg-cream-border")">
+        <span class="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all @(Value ? "end-0.5" : "start-0.5")"></span>
+    </span>
+</button>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public bool Optional { get; set; }
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+
+    private Task Toggle() => ValueChanged.InvokeAsync(!Value);
+}

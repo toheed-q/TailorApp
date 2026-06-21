@@ -2,6 +2,8 @@
 @inject NavigationManager Nav
 @inject ILocalizationService Loc
 
+@if (!Hidden)
+{
 <nav class="fixed inset-x-0 bottom-0 z-30 mx-auto flex w-full max-w-md items-stretch justify-around
             border-t border-cream-border bg-cream/95 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2
             shadow-nav backdrop-blur">
@@ -35,6 +37,7 @@
         <span>@Loc["Nav.Settings"]</span>
     </a>
 </nav>
+}
 
 @code {
     protected override void OnInitialized()
@@ -45,6 +48,11 @@
 
     private string Relative =>
         Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#')[0].Trim('/');
+
+    // Full-screen flows (add/edit customer) replace the nav with their own action bar.
+    private bool Hidden =>
+        Relative == "customers/new" ||
+        Relative.EndsWith("/edit", StringComparison.Ordinal);
 
     private bool IsActive(string route)
         => route.Length == 0

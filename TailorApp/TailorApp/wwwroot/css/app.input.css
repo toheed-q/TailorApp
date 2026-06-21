@@ -87,6 +87,10 @@
     @apply w-full rounded-tile border border-cream-border bg-cream-card px-4 py-3 text-ink;
     @apply placeholder:text-subtle focus:border-brick focus:outline-none;
   }
+  .app-select {
+    @apply w-full appearance-none rounded-tile border border-cream-border bg-cream-card py-2.5 ps-3 pe-9 text-ink;
+    @apply focus:border-brick focus:outline-none;
+  }
 }
 
 /* ---- Blazor host chrome (kept from template) ---- */

@@ -71,6 +71,41 @@
   <data name="Design.Cuff" xml:space="preserve"><value>کف ڈیزائن</value></data>
   <data name="Design.Pocket" xml:space="preserve"><value>جیب ڈیزائن</value></data>
   <data name="Design.Button" xml:space="preserve"><value>بٹن اسٹائل</value></data>
+  <data name="Design.Ban" xml:space="preserve"><value>بین</value></data>
+  <data name="Design.Shirt" xml:space="preserve"><value>شرٹ</value></data>
+  <data name="Design.Sherwani" xml:space="preserve"><value>شیروانی</value></data>
+  <data name="Design.CuffPlain" xml:space="preserve"><value>سادہ</value></data>
+  <data name="Design.CuffOne" xml:space="preserve"><value>1 بٹن</value></data>
+  <data name="Design.CuffTwo" xml:space="preserve"><value>2 بٹن</value></data>
+  <data name="Design.PocketPatch" xml:space="preserve"><value>پیچ</value></data>
+  <data name="Design.PocketFlap" xml:space="preserve"><value>فلیپ</value></data>
+  <data name="Design.PocketVCut" xml:space="preserve"><value>وی کٹ</value></data>
+
+  <data name="Style.Simple" xml:space="preserve"><value>سادہ</value></data>
+  <data name="Style.Pleated" xml:space="preserve"><value>پلیٹڈ</value></data>
+  <data name="Style.Bootcut" xml:space="preserve"><value>بوٹ کٹ</value></data>
+  <data name="Style.Patiala" xml:space="preserve"><value>پٹیالہ</value></data>
+  <data name="Style.Aladdin" xml:space="preserve"><value>علاءالدین</value></data>
+
+  <data name="Form.CustomerInfo" xml:space="preserve"><value>گاہک کی معلومات</value></data>
+  <data name="Form.CustomerName" xml:space="preserve"><value>گاہک کا نام</value></data>
+  <data name="Form.NamePlaceholder" xml:space="preserve"><value>مثلاً عمران خان</value></data>
+  <data name="Form.PhonePlaceholder" xml:space="preserve"><value>0301-2345678</value></data>
+  <data name="Form.AddressPlaceholder" xml:space="preserve"><value>دکان، گلی، شہر</value></data>
+  <data name="Form.NotesPlaceholder" xml:space="preserve"><value>فٹنگ کی ترجیحات، ڈیلیوری کی تاریخ...</value></data>
+  <data name="Form.Optional" xml:space="preserve"><value>اختیاری</value></data>
+  <data name="Form.Inches" xml:space="preserve"><value>انچ</value></data>
+  <data name="Form.Unit" xml:space="preserve"><value>انچ</value></data>
+  <data name="Form.ArmWidth" xml:space="preserve"><value>بازو کی چوڑائی</value></data>
+  <data name="Form.CollarSize" xml:space="preserve"><value>کالر سائز</value></data>
+  <data name="Form.CuffSize" xml:space="preserve"><value>کف سائز</value></data>
+  <data name="Form.ThighWidth" xml:space="preserve"><value>ران کی چوڑائی</value></data>
+  <data name="Form.Bottom" xml:space="preserve"><value>پانچہ</value></data>
+  <data name="Form.FrontPocket" xml:space="preserve"><value>سامنے کی جیب</value></data>
+  <data name="Form.SidePocket" xml:space="preserve"><value>سائیڈ جیب</value></data>
+  <data name="Form.ShalwarStyle" xml:space="preserve"><value>شلوار اسٹائل</value></data>
+  <data name="Form.Design" xml:space="preserve"><value>ڈیزائن</value></data>
+  <data name="Form.SaveCustomer" xml:space="preserve"><value>گاہک محفوظ کریں</value></data>
 
   <data name="History.Title" xml:space="preserve"><value>تاریخ</value></data>
   <data name="History.Empty" xml:space="preserve"><value>ابھی کوئی ریکارڈ نہیں</value></data>

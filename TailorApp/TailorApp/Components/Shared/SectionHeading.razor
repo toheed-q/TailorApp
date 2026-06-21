@@ -1,0 +1,9 @@
+@* Section title with the decorative measuring-tape divider (matches Home). *@
+<div class="mt-7 flex items-center">
+    <h2 class="shrink-0 font-serif text-lg font-bold text-ink">@Title</h2>
+    <RulerDivider />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+}

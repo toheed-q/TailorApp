@@ -6,9 +6,7 @@ namespace TailorApp.Domain.Enums;
 public enum PocketDesign
 {
     Unspecified = 0,
-    None = 1,
-    SingleFront = 2,
-    DoubleFront = 3,
-    SidePocket = 4,
-    ChestPocket = 5
+    Patch = 1,
+    Flap = 2,
+    VCut = 3
 }
