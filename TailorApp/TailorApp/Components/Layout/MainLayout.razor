@@ -1,6 +1,8 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject ILocalizationService Loc
+@inject IAppSettingsService Settings
+@inject IJSRuntime JS
 
 <div dir="@Loc.Direction"
      class="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col bg-cream">
@@ -13,11 +15,45 @@
 
 @code {
     protected override void OnInitialized()
-        => Loc.LanguageChanged += OnLanguageChanged;
+    {
+        Loc.LanguageChanged += OnSettingsChanged;
+        Settings.Changed += OnSettingsChanged;
+    }
 
-    private void OnLanguageChanged(object? sender, EventArgs e)
-        => InvokeAsync(StateHasChanged);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await ApplyTextSizeAsync();
+    }
+
+    private async Task ApplyTextSizeAsync()
+    {
+        var percent = Settings.TextSize switch
+        {
+            TextSize.Small => 90,
+            TextSize.Large => 115,
+            _ => 100
+        };
+        try
+        {
+            await JS.InvokeVoidAsync("tailorApp.setFontScale", percent);
+        }
+        catch (JSException)
+        {
+            // Non-fatal: the app is fully usable at the default size.
+        }
+    }
+
+    private void OnSettingsChanged(object? sender, EventArgs e)
+        => InvokeAsync(async () =>
+        {
+            StateHasChanged();
+            await ApplyTextSizeAsync();
+        });
 
     public void Dispose()
-        => Loc.LanguageChanged -= OnLanguageChanged;
+    {
+        Loc.LanguageChanged -= OnSettingsChanged;
+        Settings.Changed -= OnSettingsChanged;
+    }
 }

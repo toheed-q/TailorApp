@@ -3,6 +3,7 @@
 @inject ICustomerService CustomerService
 @inject IMeasurementService MeasurementService
 @inject ILocalizationService Loc
+@inject IAppSettingsService Settings
 @inject NavigationManager Nav
 
 <!-- Header -->
@@ -16,8 +17,8 @@
             </svg>
         </div>
         <div class="leading-tight">
-            <h1 class="font-serif text-2xl font-bold text-ink">Darzi</h1>
-            <p class="text-[10px] font-medium uppercase tracking-[0.2em] text-subtle">@Loc["Brand.Tagline"]</p>
+            <h1 class="font-serif text-2xl font-bold text-ink">@Settings.ShopName</h1>
+            <p class="text-[10px] font-medium uppercase tracking-[0.2em] text-subtle">@Settings.ShopTagline</p>
         </div>
     </div>
 
@@ -172,7 +173,10 @@
     private bool _loading = true;
 
     protected override void OnInitialized()
-        => Loc.LanguageChanged += OnLanguageChanged;
+    {
+        Loc.LanguageChanged += OnLanguageChanged;
+        Settings.Changed += OnLanguageChanged;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,5 +190,8 @@
         => InvokeAsync(StateHasChanged);
 
     public void Dispose()
-        => Loc.LanguageChanged -= OnLanguageChanged;
+    {
+        Loc.LanguageChanged -= OnLanguageChanged;
+        Settings.Changed -= OnLanguageChanged;
+    }
 }

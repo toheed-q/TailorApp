@@ -1,0 +1,24 @@
+@* Read-only measurement tile: label + value in the chosen unit (or — when not recorded). *@
+@inject ILocalizationService Loc
+@inject IAppSettingsService Settings
+
+<div class="app-card p-3">
+    <p class="truncate text-xs font-medium text-subtle">@Label</p>
+    @if (Value.HasValue)
+    {
+        <p class="mt-1 text-lg font-bold text-ink">
+            @DisplayFormat.Measurement(Value.Value, Settings.Unit)<span class="ms-1 text-xs font-medium text-subtle">@UnitLabel</span>
+        </p>
+    }
+    else
+    {
+        <p class="mt-1 text-lg font-bold text-subtle">—</p>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public double? Value { get; set; }
+
+    private string UnitLabel => Settings.Unit == MeasurementUnit.Centimeters ? Loc["Form.UnitCm"] : Loc["Form.Unit"];
+}

@@ -42,6 +42,7 @@
   <data name="Customer.Edit" xml:space="preserve"><value>گاہک میں ترمیم</value></data>
   <data name="Customer.DeleteConfirm" xml:space="preserve"><value>کیا آپ واقعی اس گاہک کو حذف کرنا چاہتے ہیں؟</value></data>
   <data name="Customer.HistorySoon" xml:space="preserve"><value>ناپ اور تاریخ جلد آ رہی ہے</value></data>
+  <data name="Customer.NoMeasurements" xml:space="preserve"><value>ابھی کوئی ناپ درج نہیں</value></data>
 
   <data name="Customers.FilterAll" xml:space="preserve"><value>سب</value></data>
   <data name="Customers.FilterRecent" xml:space="preserve"><value>حالیہ</value></data>
@@ -96,6 +97,7 @@
   <data name="Form.Optional" xml:space="preserve"><value>اختیاری</value></data>
   <data name="Form.Inches" xml:space="preserve"><value>انچ</value></data>
   <data name="Form.Unit" xml:space="preserve"><value>انچ</value></data>
+  <data name="Form.UnitCm" xml:space="preserve"><value>سینٹی میٹر</value></data>
   <data name="Form.ArmWidth" xml:space="preserve"><value>بازو کی چوڑائی</value></data>
   <data name="Form.CollarSize" xml:space="preserve"><value>کالر سائز</value></data>
   <data name="Form.CuffSize" xml:space="preserve"><value>کف سائز</value></data>
@@ -136,4 +138,30 @@
   <data name="Home.RecentOrders" xml:space="preserve"><value>حالیہ آرڈرز</value></data>
   <data name="Home.RecentCustomers" xml:space="preserve"><value>حالیہ گاہک</value></data>
   <data name="Home.ViewAll" xml:space="preserve"><value>سب دیکھیں</value></data>
+
+  <data name="Settings.YourData" xml:space="preserve"><value>آپ کا ڈیٹا</value></data>
+  <data name="Settings.About" xml:space="preserve"><value>ایپ کے بارے میں</value></data>
+  <data name="Settings.UnitInches" xml:space="preserve"><value>انچ</value></data>
+  <data name="Settings.UnitCentimeters" xml:space="preserve"><value>سینٹی میٹر</value></data>
+  <data name="Settings.DefaultStyle" xml:space="preserve"><value>ڈیفالٹ شلوار اسٹائل</value></data>
+  <data name="Settings.TextSize" xml:space="preserve"><value>ٹیکسٹ سائز</value></data>
+  <data name="Settings.TextSizeHint" xml:space="preserve"><value>سب کے لیے آسان پڑھائی</value></data>
+  <data name="Settings.TextSmall" xml:space="preserve"><value>چھوٹا</value></data>
+  <data name="Settings.TextNormal" xml:space="preserve"><value>درمیانہ</value></data>
+  <data name="Settings.TextLarge" xml:space="preserve"><value>بڑا</value></data>
+  <data name="Settings.BackUp" xml:space="preserve"><value>ڈیٹا بیک اپ کریں</value></data>
+  <data name="Settings.BackUpNow" xml:space="preserve"><value>ابھی بیک اپ کریں</value></data>
+  <data name="Settings.LastBackupFormat" xml:space="preserve"><value>آخری بیک اپ: {0}</value></data>
+  <data name="Settings.NeverBackedUp" xml:space="preserve"><value>ابھی بیک اپ نہیں ہوا</value></data>
+  <data name="Settings.ExportPdf" xml:space="preserve"><value>گاہک ایکسپورٹ کریں (PDF)</value></data>
+  <data name="Settings.DataNote" xml:space="preserve"><value>سب کچھ اسی فون میں محفوظ ہے اور انٹرنیٹ کے بغیر کام کرتا ہے۔ سگنل ہونے پر بیک اپ کریں۔</value></data>
+  <data name="Settings.Version" xml:space="preserve"><value>ورژن</value></data>
+  <data name="Settings.Help" xml:space="preserve"><value>مدد اور سپورٹ</value></data>
+  <data name="Settings.ComingSoon" xml:space="preserve"><value>جلد آ رہا ہے</value></data>
+  <data name="Settings.EditShop" xml:space="preserve"><value>دکان میں ترمیم</value></data>
+  <data name="Settings.ShopName" xml:space="preserve"><value>دکان کا نام</value></data>
+  <data name="Settings.ShopTagline" xml:space="preserve"><value>ٹیگ لائن</value></data>
+  <data name="Settings.ShopCity" xml:space="preserve"><value>شہر</value></data>
+  <data name="Settings.SignInHint" xml:space="preserve"><value>کلاؤڈ پر بیک اپ کے لیے سائن ان کریں۔</value></data>
+  <data name="Settings.SignedIn" xml:space="preserve"><value>آپ سائن ان ہیں۔ اپنا ڈیٹا کلاؤڈ پر بیک اپ کریں۔</value></data>
 </root>

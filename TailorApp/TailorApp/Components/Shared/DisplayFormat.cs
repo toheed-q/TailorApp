@@ -1,4 +1,5 @@
 using System.Globalization;
+using TailorApp.Domain.Enums;
 
 namespace TailorApp.Components.Shared;
 
@@ -52,4 +53,23 @@ public static class DisplayFormat
     /// <summary>Formats a whole/decimal number without trailing zeros (for measurements).</summary>
     public static string Number(double value)
         => value.ToString("0.##", CultureInfo.InvariantCulture);
+
+    private const double CmPerInch = 2.54;
+
+    /// <summary>Converts a stored inch value into the chosen display unit.</summary>
+    public static double ToDisplayUnit(double inches, MeasurementUnit unit)
+        => unit == MeasurementUnit.Centimeters ? inches * CmPerInch : inches;
+
+    /// <summary>Converts a value entered in the chosen unit back into inches for storage.</summary>
+    public static double ToInches(double value, MeasurementUnit unit)
+        => unit == MeasurementUnit.Centimeters ? value / CmPerInch : value;
+
+    /// <summary>Formats a stored inch value in the chosen unit (cm to 1 dp, inches to 2 dp).</summary>
+    public static string Measurement(double inches, MeasurementUnit unit)
+    {
+        var value = ToDisplayUnit(inches, unit);
+        return unit == MeasurementUnit.Centimeters
+            ? value.ToString("0.#", CultureInfo.InvariantCulture)
+            : value.ToString("0.##", CultureInfo.InvariantCulture);
+    }
 }

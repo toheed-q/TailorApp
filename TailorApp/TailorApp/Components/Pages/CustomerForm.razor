@@ -4,6 +4,7 @@
 @inject ICustomerService CustomerService
 @inject IMeasurementService MeasurementService
 @inject ILocalizationService Loc
+@inject IAppSettingsService Settings
 @inject NavigationManager Nav
 
 <EditForm Model="_customer" OnValidSubmit="SaveAsync">
@@ -267,7 +268,7 @@
         _m.NeckWidth = 7; _m.Cuff = 9;
         _m.FrontPocket = true; _m.SidePocket = false;
         _m.ShalwarLength = 40; _m.ShalwarWaist = 36; _m.Hip = 44; _m.ThighWidth = 28; _m.PanchaWidth = 14;
-        _m.ShalwarStyle = ShalwarStyle.Simple;
+        _m.ShalwarStyle = Settings.DefaultShalwarStyle;
     }
 
     private void LoadMeasurements(MeasurementSetWithDesign source)

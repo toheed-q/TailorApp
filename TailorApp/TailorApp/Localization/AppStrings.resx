@@ -42,6 +42,7 @@
   <data name="Customer.Edit" xml:space="preserve"><value>Edit customer</value></data>
   <data name="Customer.DeleteConfirm" xml:space="preserve"><value>Are you sure you want to delete this customer?</value></data>
   <data name="Customer.HistorySoon" xml:space="preserve"><value>Measurements &amp; history coming soon</value></data>
+  <data name="Customer.NoMeasurements" xml:space="preserve"><value>No measurements recorded yet</value></data>
 
   <data name="Customers.FilterAll" xml:space="preserve"><value>All</value></data>
   <data name="Customers.FilterRecent" xml:space="preserve"><value>Recent</value></data>
@@ -96,6 +97,7 @@
   <data name="Form.Optional" xml:space="preserve"><value>optional</value></data>
   <data name="Form.Inches" xml:space="preserve"><value>inches</value></data>
   <data name="Form.Unit" xml:space="preserve"><value>in</value></data>
+  <data name="Form.UnitCm" xml:space="preserve"><value>cm</value></data>
   <data name="Form.ArmWidth" xml:space="preserve"><value>Arm width</value></data>
   <data name="Form.CollarSize" xml:space="preserve"><value>Collar size</value></data>
   <data name="Form.CuffSize" xml:space="preserve"><value>Cuff size</value></data>
@@ -136,4 +138,30 @@
   <data name="Home.RecentOrders" xml:space="preserve"><value>Recent orders</value></data>
   <data name="Home.RecentCustomers" xml:space="preserve"><value>Recent customers</value></data>
   <data name="Home.ViewAll" xml:space="preserve"><value>View all</value></data>
+
+  <data name="Settings.YourData" xml:space="preserve"><value>Your data</value></data>
+  <data name="Settings.About" xml:space="preserve"><value>About</value></data>
+  <data name="Settings.UnitInches" xml:space="preserve"><value>Inches</value></data>
+  <data name="Settings.UnitCentimeters" xml:space="preserve"><value>Centimeters</value></data>
+  <data name="Settings.DefaultStyle" xml:space="preserve"><value>Default shalwar style</value></data>
+  <data name="Settings.TextSize" xml:space="preserve"><value>Text size</value></data>
+  <data name="Settings.TextSizeHint" xml:space="preserve"><value>Easier reading for everyone</value></data>
+  <data name="Settings.TextSmall" xml:space="preserve"><value>Small</value></data>
+  <data name="Settings.TextNormal" xml:space="preserve"><value>Normal</value></data>
+  <data name="Settings.TextLarge" xml:space="preserve"><value>Large</value></data>
+  <data name="Settings.BackUp" xml:space="preserve"><value>Back up data</value></data>
+  <data name="Settings.BackUpNow" xml:space="preserve"><value>Back up now</value></data>
+  <data name="Settings.LastBackupFormat" xml:space="preserve"><value>Last backup: {0}</value></data>
+  <data name="Settings.NeverBackedUp" xml:space="preserve"><value>Not backed up yet</value></data>
+  <data name="Settings.ExportPdf" xml:space="preserve"><value>Export customers (PDF)</value></data>
+  <data name="Settings.DataNote" xml:space="preserve"><value>Everything is saved on this phone and works without internet. Back up when you have a signal.</value></data>
+  <data name="Settings.Version" xml:space="preserve"><value>Version</value></data>
+  <data name="Settings.Help" xml:space="preserve"><value>Help &amp; support</value></data>
+  <data name="Settings.ComingSoon" xml:space="preserve"><value>Coming soon</value></data>
+  <data name="Settings.EditShop" xml:space="preserve"><value>Edit shop</value></data>
+  <data name="Settings.ShopName" xml:space="preserve"><value>Shop name</value></data>
+  <data name="Settings.ShopTagline" xml:space="preserve"><value>Tagline</value></data>
+  <data name="Settings.ShopCity" xml:space="preserve"><value>City</value></data>
+  <data name="Settings.SignInHint" xml:space="preserve"><value>Sign in to back up to the cloud.</value></data>
+  <data name="Settings.SignedIn" xml:space="preserve"><value>You're signed in. Back up your data to the cloud.</value></data>
 </root>

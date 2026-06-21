@@ -1,9 +1,435 @@
 @page "/settings"
+@implements IDisposable
 @inject ILocalizationService Loc
+@inject IAppSettingsService Prefs
+@inject IFirebaseAuthService Auth
+@inject ISyncService Sync
 
-@* Placeholder — awaiting the Settings design reference. *@
+<!-- Header -->
 <header class="pt-2">
     <h1 class="font-serif text-2xl font-bold text-ink">@Loc["Common.Settings"]</h1>
 </header>
 
-<div class="mt-16 text-center text-subtle">@Loc["Common.Loading"]</div>
+<!-- Shop / brand card -->
+<div class="app-card mt-6 flex items-center gap-3 p-4">
+    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-tile bg-brick text-white">
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="2.6" /><circle cx="6" cy="18" r="2.6" />
+            <path d="M8.2 7.6 20 18" /><path d="M8.2 16.4 20 6" />
+        </svg>
+    </span>
+    <div class="min-w-0 flex-1">
+        <p class="truncate font-serif text-lg font-bold text-ink">@Prefs.ShopName</p>
+        <p class="truncate text-sm text-subtle">@ShopSubtitle</p>
+    </div>
+    <button type="button" @onclick="OpenShopEdit" class="shrink-0 text-sm font-semibold text-brick">@Loc["Common.Edit"]</button>
+</div>
+
+<!-- Language -->
+<SectionHeading Title="@Loc["Common.Language"]" />
+<div class="mt-3 space-y-3">
+    @LanguageOption(Language.English, "En", "English", "Customer Name · Phone Number")
+    @LanguageOption(Language.Urdu, "اُ", "اردو", "گاہک کا نام · فون نمبر")
+</div>
+
+<!-- Measurements -->
+<SectionHeading Title="@Loc["Measurement.Title"]" />
+<div class="mt-3 grid grid-cols-2 gap-1 rounded-full bg-cream-line p-1">
+    <button type="button" @onclick="() => SetUnit(MeasurementUnit.Inches)" class="@SegClass(MeasurementUnit.Inches)">
+        @Loc["Settings.UnitInches"]
+    </button>
+    <button type="button" @onclick="() => SetUnit(MeasurementUnit.Centimeters)" class="@SegClass(MeasurementUnit.Centimeters)">
+        @Loc["Settings.UnitCentimeters"]
+    </button>
+</div>
+
+<div class="app-card mt-3 divide-y divide-cream-line">
+    <button type="button" @onclick="OpenStylePicker" class="flex w-full items-center gap-3 px-4 py-3.5 text-start">
+        <span class="@IconTile">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 4 5 6v4l2 .5V20h10V10.5L19 10V6l-4-2a3 3 0 0 1-6 0Z" />
+            </svg>
+        </span>
+        <span class="flex-1 font-medium text-ink">@Loc["Settings.DefaultStyle"]</span>
+        <span class="shrink-0 text-sm text-subtle">@Loc[$"Style.{Prefs.DefaultShalwarStyle}"]</span>
+        <span class="shrink-0 text-subtle">@Chevron</span>
+    </button>
+    <button type="button" @onclick="OpenTextSizePicker" class="flex w-full items-center gap-3 px-4 py-3.5 text-start">
+        <span class="@IconTile">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 7V5h9v2" /><path d="M8.5 5v13" /><path d="M14 13v-1.5h6V13" /><path d="M17 11.5V18" />
+            </svg>
+        </span>
+        <span class="flex-1">
+            <span class="block font-medium text-ink">@Loc["Settings.TextSize"]</span>
+            <span class="block text-xs text-subtle">@Loc["Settings.TextSizeHint"]</span>
+        </span>
+        <span class="shrink-0 text-sm text-subtle">@TextSizeLabel(Prefs.TextSize)</span>
+        <span class="shrink-0 text-subtle">@Chevron</span>
+    </button>
+</div>
+
+<!-- Your data -->
+<SectionHeading Title="@Loc["Settings.YourData"]" />
+<div class="app-card mt-3 divide-y divide-cream-line">
+    <button type="button" @onclick="OpenBackup" class="flex w-full items-center gap-3 px-4 py-3.5 text-start">
+        <span class="@IconTile">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.3A3.5 3.5 0 0 1 17 18Z" />
+            </svg>
+        </span>
+        <span class="flex-1">
+            <span class="block font-medium text-ink">@Loc["Settings.BackUp"]</span>
+            <span class="block text-xs text-subtle">@BackupSubtitle</span>
+        </span>
+        <span class="shrink-0 text-subtle">@Chevron</span>
+    </button>
+    <button type="button" @onclick="ExportPdf" class="flex w-full items-center gap-3 px-4 py-3.5 text-start">
+        <span class="@IconTile">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h6" /><path d="M9 12h6" /><path d="M9 16h4" />
+            </svg>
+        </span>
+        <span class="flex-1 font-medium text-ink">@Loc["Settings.ExportPdf"]</span>
+        <span class="shrink-0 text-subtle">@Chevron</span>
+    </button>
+</div>
+
+<p class="mt-3 flex items-start gap-2 text-sm text-subtle">
+    <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brick"></span>
+    <span>@Loc["Settings.DataNote"]</span>
+</p>
+
+<!-- About -->
+<SectionHeading Title="@Loc["Settings.About"]" />
+<div class="app-card mt-3 divide-y divide-cream-line">
+    <div class="flex w-full items-center gap-3 px-4 py-3.5">
+        <span class="@IconTile">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" /><path d="M12 11v5" /><path d="M12 7.5h.01" />
+            </svg>
+        </span>
+        <span class="flex-1 font-medium text-ink">@Loc["Settings.Version"]</span>
+        <span class="shrink-0 text-sm text-subtle">@AppVersion</span>
+    </div>
+    <a href="mailto:support@darziapp.com" class="flex w-full items-center gap-3 px-4 py-3.5">
+        <span class="@IconTile">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.2 2.2Z" />
+            </svg>
+        </span>
+        <span class="flex-1 font-medium text-ink">@Loc["Settings.Help"]</span>
+        <span class="shrink-0 text-subtle">@Chevron</span>
+    </a>
+</div>
+
+<div class="h-4"></div>
+
+<!-- ===== Modals ===== -->
+@if (_showShopEdit)
+{
+    <div class="fixed inset-0 z-40 flex items-center justify-center bg-ink/40 px-6">
+        <div class="w-full max-w-sm rounded-card bg-cream-card p-5 shadow-card">
+            <h3 class="font-serif text-lg font-bold text-ink">@Loc["Settings.EditShop"]</h3>
+            <div class="mt-4 space-y-3">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Settings.ShopName"]</label>
+                    <input @bind="_shopName" class="app-input" autocomplete="off" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Settings.ShopTagline"]</label>
+                    <input @bind="_shopTagline" class="app-input" autocomplete="off" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Settings.ShopCity"]</label>
+                    <input @bind="_shopCity" class="app-input" autocomplete="off" />
+                </div>
+            </div>
+            <div class="mt-5 flex gap-3">
+                <button type="button" @onclick="() => _showShopEdit = false"
+                        class="flex-1 rounded-full border border-cream-border py-2.5 text-sm font-medium text-ink">@Loc["Common.Cancel"]</button>
+                <button type="button" @onclick="SaveShop"
+                        class="flex-1 rounded-full bg-brick py-2.5 text-sm font-medium text-white">@Loc["Common.Save"]</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_showStylePicker)
+{
+    <div class="fixed inset-0 z-40 flex items-end justify-center bg-ink/40" @onclick="() => _showStylePicker = false">
+        <div class="w-full max-w-md rounded-t-card bg-cream-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-card" @onclick:stopPropagation="true">
+            <h3 class="font-serif text-lg font-bold text-ink">@Loc["Settings.DefaultStyle"]</h3>
+            <div class="mt-3 divide-y divide-cream-line">
+                @foreach (var style in Styles)
+                {
+                    <button type="button" @onclick="() => SelectStyle(style)" class="flex w-full items-center gap-3 py-3 text-start">
+                        <span class="flex-1 text-ink">@Loc[$"Style.{style}"]</span>
+                        @if (Prefs.DefaultShalwarStyle == style)
+                        {
+                            <span class="text-brick">@CheckIcon</span>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (_showTextSizePicker)
+{
+    <div class="fixed inset-0 z-40 flex items-end justify-center bg-ink/40" @onclick="() => _showTextSizePicker = false">
+        <div class="w-full max-w-md rounded-t-card bg-cream-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-card" @onclick:stopPropagation="true">
+            <h3 class="font-serif text-lg font-bold text-ink">@Loc["Settings.TextSize"]</h3>
+            <div class="mt-3 divide-y divide-cream-line">
+                @foreach (var size in TextSizes)
+                {
+                    <button type="button" @onclick="() => SelectTextSize(size)" class="flex w-full items-center gap-3 py-3 text-start">
+                        <span class="flex-1 text-ink">@TextSizeLabel(size)</span>
+                        @if (Prefs.TextSize == size)
+                        {
+                            <span class="text-brick">@CheckIcon</span>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (_showBackup)
+{
+    <div class="fixed inset-0 z-40 flex items-center justify-center bg-ink/40 px-6">
+        <div class="w-full max-w-sm rounded-card bg-cream-card p-5 shadow-card">
+            <h3 class="font-serif text-lg font-bold text-ink">@Loc["Settings.BackUp"]</h3>
+
+            @if (!Auth.IsSignedIn)
+            {
+                <p class="mt-2 text-sm text-subtle">@Loc["Settings.SignInHint"]</p>
+                <div class="mt-4 space-y-3">
+                    <input @bind="_email" type="email" inputmode="email" autocomplete="username"
+                           placeholder="@Loc["Auth.Email"]" class="app-input" />
+                    <input @bind="_password" type="password" autocomplete="current-password"
+                           placeholder="@Loc["Auth.Password"]" class="app-input" />
+                </div>
+            }
+            else
+            {
+                <p class="mt-2 text-sm text-subtle">@Loc["Settings.SignedIn"]</p>
+            }
+
+            @if (_backupError is not null)
+            {
+                <p class="mt-3 text-sm text-brick">@_backupError</p>
+            }
+
+            <div class="mt-5 flex gap-3">
+                <button type="button" @onclick="() => _showBackup = false" disabled="@_backupBusy"
+                        class="flex-1 rounded-full border border-cream-border py-2.5 text-sm font-medium text-ink disabled:opacity-50">@Loc["Common.Cancel"]</button>
+                <button type="button" @onclick="RunBackupAsync" disabled="@_backupBusy"
+                        class="flex-1 rounded-full bg-brick py-2.5 text-sm font-medium text-white disabled:opacity-60">
+                    @(_backupBusy ? Loc["Sync.InProgress"] : Loc["Settings.BackUpNow"])
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_toast is not null)
+{
+    <div class="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-6">
+        <div class="rounded-full bg-ink/90 px-5 py-2.5 text-sm font-medium text-white shadow-card">@_toast</div>
+    </div>
+}
+
+@code {
+    private static readonly ShalwarStyle[] Styles =
+    {
+        ShalwarStyle.Simple, ShalwarStyle.Pleated, ShalwarStyle.Bootcut,
+        ShalwarStyle.Patiala, ShalwarStyle.Aladdin
+    };
+
+    private static readonly TextSize[] TextSizes = { TextSize.Small, TextSize.Normal, TextSize.Large };
+
+    private const string IconTile = "flex h-10 w-10 shrink-0 items-center justify-center rounded-tile bg-cream-line text-ink";
+
+    private bool _showShopEdit;
+    private bool _showStylePicker;
+    private bool _showTextSizePicker;
+    private bool _showBackup;
+
+    private string _shopName = string.Empty;
+    private string _shopTagline = string.Empty;
+    private string _shopCity = string.Empty;
+
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private bool _backupBusy;
+    private string? _backupError;
+
+    private string? _toast;
+
+    protected override void OnInitialized()
+    {
+        Loc.LanguageChanged += OnExternalChange;
+        Prefs.Changed += OnExternalChange;
+    }
+
+    private string ShopSubtitle => string.IsNullOrWhiteSpace(Prefs.ShopCity)
+        ? Prefs.ShopTagline
+        : $"{Prefs.ShopTagline} · {Prefs.ShopCity}";
+
+    private string BackupSubtitle => Prefs.LastBackupUtc is { } utc
+        ? string.Format(Loc["Settings.LastBackupFormat"], utc.ToLocalTime().ToString("d MMM, h:mm tt"))
+        : Loc["Settings.NeverBackedUp"];
+
+    private static string AppVersion => Microsoft.Maui.ApplicationModel.AppInfo.Current.VersionString;
+
+    private string TextSizeLabel(TextSize size) => size switch
+    {
+        TextSize.Small => Loc["Settings.TextSmall"],
+        TextSize.Large => Loc["Settings.TextLarge"],
+        _ => Loc["Settings.TextNormal"]
+    };
+
+    private string SegClass(MeasurementUnit unit)
+    {
+        var state = Prefs.Unit == unit ? "bg-cream-card text-ink shadow-card" : "text-subtle";
+        return $"rounded-full py-2 text-sm font-medium {state}";
+    }
+
+    private void SetUnit(MeasurementUnit unit) => Prefs.Unit = unit;
+
+    private RenderFragment Chevron => @<svg class="h-5 w-5 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6" /></svg>;
+
+    private RenderFragment CheckIcon => @<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 6" /></svg>;
+
+    private RenderFragment LanguageOption(Language language, string badge, string name, string sample) => __builder =>
+    {
+        var selected = Loc.CurrentLanguage == language;
+        <button type="button" @onclick="() => SelectLanguage(language)"
+                class="@($"flex w-full items-center gap-3 rounded-card border p-4 text-start {(selected ? "border-brick bg-blush/50" : "border-cream-border bg-cream-card")}")">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-tile bg-cream-line text-base font-bold text-ink">@badge</span>
+            <span class="min-w-0 flex-1">
+                <span class="block font-semibold text-ink">@name</span>
+                <span class="block truncate text-sm text-subtle">@sample</span>
+            </span>
+            @if (selected)
+            {
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brick text-white">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 6" /></svg>
+                </span>
+            }
+            else
+            {
+                <span class="h-6 w-6 shrink-0 rounded-full border-2 border-cream-border"></span>
+            }
+        </button>
+    };
+
+    private void SelectLanguage(Language language)
+    {
+        Loc.SetLanguage(language);
+        StateHasChanged();
+    }
+
+    private void OpenShopEdit()
+    {
+        _shopName = Prefs.ShopName;
+        _shopTagline = Prefs.ShopTagline;
+        _shopCity = Prefs.ShopCity;
+        _showShopEdit = true;
+    }
+
+    private void SaveShop()
+    {
+        Prefs.ShopName = string.IsNullOrWhiteSpace(_shopName) ? "Darzi" : _shopName;
+        Prefs.ShopTagline = _shopTagline;
+        Prefs.ShopCity = _shopCity;
+        _showShopEdit = false;
+    }
+
+    private void OpenStylePicker() => _showStylePicker = true;
+
+    private void SelectStyle(ShalwarStyle style)
+    {
+        Prefs.DefaultShalwarStyle = style;
+        _showStylePicker = false;
+    }
+
+    private void OpenTextSizePicker() => _showTextSizePicker = true;
+
+    private void SelectTextSize(TextSize size)
+    {
+        Prefs.TextSize = size;
+        _showTextSizePicker = false;
+    }
+
+    private void OpenBackup()
+    {
+        _backupError = null;
+        _showBackup = true;
+    }
+
+    private async Task RunBackupAsync()
+    {
+        _backupBusy = true;
+        _backupError = null;
+        try
+        {
+            if (!Auth.IsSignedIn)
+                await Auth.SignInAsync(_email.Trim(), _password);
+
+            var result = await Sync.SyncAsync();
+            if (result.Success)
+            {
+                Prefs.LastBackupUtc = result.CompletedAtUtc;
+                _password = string.Empty;
+                _showBackup = false;
+                await ShowToastAsync(Loc["Sync.Success"]);
+            }
+            else
+            {
+                _backupError = result.Error ?? Loc["Sync.Failed"];
+            }
+        }
+        catch (AuthenticationFailedException ex)
+        {
+            _backupError = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _backupError = ex.Message;
+        }
+        finally
+        {
+            _backupBusy = false;
+        }
+    }
+
+    private async Task ExportPdf() => await ShowToastAsync(Loc["Settings.ComingSoon"]);
+
+    private async Task ShowToastAsync(string message)
+    {
+        _toast = message;
+        StateHasChanged();
+        await Task.Delay(2500);
+        _toast = null;
+        StateHasChanged();
+    }
+
+    private void OnExternalChange(object? sender, EventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Loc.LanguageChanged -= OnExternalChange;
+        Prefs.Changed -= OnExternalChange;
+    }
+}

@@ -1,17 +1,28 @@
 @page "/customers/{Id}"
 @implements IDisposable
 @inject ICustomerService CustomerService
+@inject IMeasurementService MeasurementService
 @inject ILocalizationService Loc
 @inject NavigationManager Nav
 
 <!-- Header -->
 <header class="flex items-center gap-2 pt-2">
     <button type="button" @onclick='() => Nav.NavigateTo("/customers")' aria-label="@Loc["Customer.Plural"]"
-            class="flex h-10 w-10 items-center justify-center rounded-full text-ink">
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink">
         <svg class="h-6 w-6 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
              stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6" /></svg>
     </button>
-    <h1 class="font-serif text-2xl font-bold text-ink">@Loc["Customer.Title"]</h1>
+    <h1 class="flex-1 font-serif text-2xl font-bold text-ink">@Loc["Customer.Title"]</h1>
+    @if (_customer is not null)
+    {
+        <a href="@($"/customers/{_customer.Id}/edit")" aria-label="@Loc["Common.Edit"]"
+           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brick">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.5 5.5 18.5 9.5" /><path d="M4 20l4-1L19 8a2 2 0 0 0-3-3L5 16l-1 4Z" />
+            </svg>
+        </a>
+    }
 </header>
 
 @if (_loading)
@@ -37,18 +48,63 @@ else
         </div>
     </div>
 
-    <!-- Details -->
+    <!-- Contact -->
     <div class="app-card mt-5 divide-y divide-cream-line">
         <DetailRow Label="@Loc["Customer.Phone"]" Value="@_customer.PhoneNumber" />
         <DetailRow Label="@Loc["Customer.Address"]" Value="@_customer.Address" />
         <DetailRow Label="@Loc["Customer.Notes"]" Value="@_customer.Notes" />
     </div>
 
-    <p class="mt-5 text-center text-xs text-subtle">@Loc["Customer.HistorySoon"]</p>
+    @if (_measurements is { } m)
+    {
+        <!-- Kameez -->
+        <SectionHeading Title="@($"{Loc["Measurement.Kameez"]} · {Loc["Form.Inches"]}")" />
+        <div class="mt-3 grid grid-cols-2 gap-3">
+            <StatTile Label="@Loc["Measurement.Length"]" Value="m.KameezLength" />
+            <StatTile Label="@Loc["Measurement.Chest"]" Value="m.Chest" />
+            <StatTile Label="@Loc["Measurement.Waist"]" Value="m.Waist" />
+            <StatTile Label="@Loc["Measurement.Hip"]" Value="m.KameezHip" />
+            <StatTile Label="@Loc["Measurement.Shoulder"]" Value="m.Shoulder" />
+            <StatTile Label="@Loc["Measurement.SleeveLength"]" Value="m.SleeveLength" />
+            <StatTile Label="@Loc["Form.ArmWidth"]" Value="m.ArmWidth" />
+            <StatTile Label="@Loc["Form.CollarSize"]" Value="m.Collar" />
+            <StatTile Label="@Loc["Measurement.NeckWidth"]" Value="m.NeckWidth" />
+            <StatTile Label="@Loc["Form.CuffSize"]" Value="m.Cuff" />
+        </div>
+        <div class="app-card mt-3 divide-y divide-cream-line">
+            <DetailRow Label="@Loc["Form.FrontPocket"]" Value="@YesNo(m.FrontPocket)" />
+            <DetailRow Label="@Loc["Form.SidePocket"]" Value="@YesNo(m.SidePocket)" />
+        </div>
+
+        <!-- Shalwar -->
+        <SectionHeading Title="@($"{Loc["Measurement.Shalwar"]} · {Loc["Form.Inches"]}")" />
+        <div class="mt-3 grid grid-cols-2 gap-3">
+            <StatTile Label="@Loc["Measurement.Length"]" Value="m.ShalwarLength" />
+            <StatTile Label="@Loc["Measurement.Waist"]" Value="m.ShalwarWaist" />
+            <StatTile Label="@Loc["Measurement.Hip"]" Value="m.Hip" />
+            <StatTile Label="@Loc["Form.ThighWidth"]" Value="m.ThighWidth" />
+            <StatTile Label="@Loc["Form.Bottom"]" Value="m.PanchaWidth" />
+        </div>
+        <div class="app-card mt-3 divide-y divide-cream-line">
+            <DetailRow Label="@Loc["Form.ShalwarStyle"]" Value="@StyleLabel(m.ShalwarStyle)" />
+        </div>
+
+        <!-- Design -->
+        <SectionHeading Title="@Loc["Form.Design"]" />
+        <div class="app-card mt-3 divide-y divide-cream-line">
+            <DetailRow Label="@Loc["Design.Collar"]" Value="@CollarLabel(_design?.CollarDesign)" />
+            <DetailRow Label="@Loc["Design.Cuff"]" Value="@CuffLabel(_design?.CuffDesign)" />
+            <DetailRow Label="@Loc["Design.Pocket"]" Value="@PocketLabel(_design?.PocketDesign)" />
+        </div>
+    }
+    else
+    {
+        <div class="app-card mt-5 px-4 py-8 text-center text-sm text-subtle">@Loc["Customer.NoMeasurements"]</div>
+    }
 
     <!-- Edit -->
     <a href="@($"/customers/{_customer.Id}/edit")"
-       class="mt-5 flex items-center justify-center gap-2 rounded-full bg-brick py-3 text-sm font-medium text-white">
+       class="mt-6 flex items-center justify-center gap-2 rounded-full bg-brick py-3 text-sm font-medium text-white">
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
              stroke-linecap="round" stroke-linejoin="round">
             <path d="M14.5 5.5 18.5 9.5" /><path d="M4 20l4-1L19 8a2 2 0 0 0-3-3L5 16l-1 4Z" />
@@ -63,6 +119,8 @@ else
     [Parameter] public string? Id { get; set; }
 
     private Customer? _customer;
+    private MeasurementSet? _measurements;
+    private DesignPreference? _design;
     private bool _loading = true;
 
     protected override void OnInitialized()
@@ -72,8 +130,45 @@ else
     {
         _loading = true;
         _customer = Id is null ? null : await CustomerService.GetByIdAsync(Id);
+
+        if (_customer is not null)
+        {
+            var latest = (await MeasurementService.GetHistoryAsync(_customer.Id)).FirstOrDefault();
+            _measurements = latest?.Measurements;
+            _design = latest?.Design;
+        }
+
         _loading = false;
     }
+
+    private string YesNo(bool value) => value ? Loc["Common.Yes"] : Loc["Common.No"];
+
+    private string? StyleLabel(ShalwarStyle style)
+        => style == ShalwarStyle.Unspecified ? null : Loc[$"Style.{style}"];
+
+    private string? CollarLabel(CollarDesign? value) => value switch
+    {
+        CollarDesign.Ban => Loc["Design.Ban"],
+        CollarDesign.Shirt => Loc["Design.Shirt"],
+        CollarDesign.Sherwani => Loc["Design.Sherwani"],
+        _ => null
+    };
+
+    private string? CuffLabel(CuffDesign? value) => value switch
+    {
+        CuffDesign.Plain => Loc["Design.CuffPlain"],
+        CuffDesign.OneButton => Loc["Design.CuffOne"],
+        CuffDesign.TwoButton => Loc["Design.CuffTwo"],
+        _ => null
+    };
+
+    private string? PocketLabel(PocketDesign? value) => value switch
+    {
+        PocketDesign.Patch => Loc["Design.PocketPatch"],
+        PocketDesign.Flap => Loc["Design.PocketFlap"],
+        PocketDesign.VCut => Loc["Design.PocketVCut"],
+        _ => null
+    };
 
     private void OnLanguageChanged(object? sender, EventArgs e)
         => InvokeAsync(StateHasChanged);
