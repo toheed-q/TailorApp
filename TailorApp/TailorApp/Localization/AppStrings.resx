@@ -126,7 +126,11 @@
 
   <data name="Nav.Home" xml:space="preserve"><value>Home</value></data>
   <data name="Nav.Customers" xml:space="preserve"><value>Customers</value></data>
+  <data name="Nav.Orders" xml:space="preserve"><value>Orders</value></data>
   <data name="Nav.Settings" xml:space="preserve"><value>Settings</value></data>
+
+  <data name="Orders.Empty" xml:space="preserve"><value>No orders yet</value></data>
+  <data name="Orders.Create" xml:space="preserve"><value>Create order</value></data>
 
   <data name="Home.SearchPlaceholder" xml:space="preserve"><value>Search by name or phone</value></data>
   <data name="Home.QuickActions" xml:space="preserve"><value>Quick actions</value></data>

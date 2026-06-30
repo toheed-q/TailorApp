@@ -1,0 +1,62 @@
+@page "/orders"
+@implements IDisposable
+@inject ILocalizationService Loc
+
+<!-- Header -->
+<header class="pt-2">
+    <h1 class="font-serif text-2xl font-bold text-ink">@Loc["Nav.Orders"]</h1>
+</header>
+
+<!-- List (no orders yet — creation comes later) -->
+<div class="mt-4">
+    <div class="app-card px-4 py-12 text-center">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cream-line text-subtle">
+            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8h12l-.8 11a1 1 0 0 1-1 .9H7.8a1 1 0 0 1-1-.9z" /><path d="M9 8V7a3 3 0 0 1 6 0v1" />
+            </svg>
+        </div>
+        <p class="mt-3 text-sm text-subtle">@Loc["Orders.Empty"]</p>
+    </div>
+</div>
+
+<!-- Floating Create order button (aligned to the centered frame) -->
+<div class="pointer-events-none fixed inset-x-0 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-30 mx-auto flex max-w-md justify-end px-5">
+    <button type="button" @onclick="CreateOrderAsync"
+            class="pointer-events-auto flex items-center gap-2 rounded-full bg-brick px-5 py-3.5 font-medium text-white shadow-card">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14" /><path d="M5 12h14" />
+        </svg>
+        @Loc["Orders.Create"]
+    </button>
+</div>
+
+@if (_toast is not null)
+{
+    <div class="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-6">
+        <div class="rounded-full bg-ink/90 px-5 py-2.5 text-sm font-medium text-white shadow-card">@_toast</div>
+    </div>
+}
+
+@code {
+    private string? _toast;
+
+    protected override void OnInitialized()
+        => Loc.LanguageChanged += OnLanguageChanged;
+
+    private async Task CreateOrderAsync()
+    {
+        // The order creation flow is not built yet.
+        _toast = Loc["Settings.ComingSoon"];
+        StateHasChanged();
+        await Task.Delay(2500);
+        _toast = null;
+        StateHasChanged();
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Loc.LanguageChanged -= OnLanguageChanged;
+}

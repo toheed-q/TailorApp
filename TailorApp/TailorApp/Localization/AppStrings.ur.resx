@@ -126,7 +126,11 @@
 
   <data name="Nav.Home" xml:space="preserve"><value>ہوم</value></data>
   <data name="Nav.Customers" xml:space="preserve"><value>گاہک</value></data>
+  <data name="Nav.Orders" xml:space="preserve"><value>آرڈرز</value></data>
   <data name="Nav.Settings" xml:space="preserve"><value>ترتیبات</value></data>
+
+  <data name="Orders.Empty" xml:space="preserve"><value>ابھی کوئی آرڈر نہیں</value></data>
+  <data name="Orders.Create" xml:space="preserve"><value>آرڈر بنائیں</value></data>
 
   <data name="Home.SearchPlaceholder" xml:space="preserve"><value>نام یا فون سے تلاش کریں</value></data>
   <data name="Home.QuickActions" xml:space="preserve"><value>فوری اقدامات</value></data>
