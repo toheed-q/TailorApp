@@ -168,4 +168,67 @@
   <data name="Settings.ShopCity" xml:space="preserve"><value>City</value></data>
   <data name="Settings.SignInHint" xml:space="preserve"><value>Sign in to back up to the cloud.</value></data>
   <data name="Settings.SignedIn" xml:space="preserve"><value>You're signed in. Back up your data to the cloud.</value></data>
+
+  <data name="Common.NotSet" xml:space="preserve"><value>Not set</value></data>
+  <data name="Common.Adjust" xml:space="preserve"><value>Adjust</value></data>
+
+  <data name="Order.New" xml:space="preserve"><value>New order</value></data>
+  <data name="Order.Edit" xml:space="preserve"><value>Edit order</value></data>
+  <data name="Order.Customer" xml:space="preserve"><value>Customer</value></data>
+  <data name="Order.Change" xml:space="preserve"><value>Change</value></data>
+  <data name="Order.SelectCustomer" xml:space="preserve"><value>Select customer</value></data>
+  <data name="Order.Section" xml:space="preserve"><value>Order</value></data>
+  <data name="Order.Garment" xml:space="preserve"><value>Garment</value></data>
+  <data name="Order.Quantity" xml:space="preserve"><value>Quantity</value></data>
+  <data name="Order.UnitSuits" xml:space="preserve"><value>suits</value></data>
+  <data name="Order.UnitPieces" xml:space="preserve"><value>pcs</value></data>
+  <data name="Order.Occasion" xml:space="preserve"><value>Occasion</value></data>
+  <data name="Order.Cloth" xml:space="preserve"><value>Cloth</value></data>
+  <data name="Order.ProvidedBy" xml:space="preserve"><value>Provided by</value></data>
+  <data name="Order.FabricType" xml:space="preserve"><value>Fabric type</value></data>
+  <data name="Order.Colour" xml:space="preserve"><value>Colour</value></data>
+  <data name="Order.ColourPlaceholder" xml:space="preserve"><value>e.g. Charcoal grey</value></data>
+  <data name="Order.ClothReceived" xml:space="preserve"><value>Cloth received</value></data>
+  <data name="Order.SavedMeasurements" xml:space="preserve"><value>Saved measurements</value></data>
+  <data name="Order.NoMeasurements" xml:space="preserve"><value>No saved measurements</value></data>
+  <data name="Order.MeasurementsKameezShalwar" xml:space="preserve"><value>Kameez &amp; Shalwar</value></data>
+  <data name="Order.CollarHint" xml:space="preserve"><value>Collar — from profile, change if needed</value></data>
+  <data name="Order.Schedule" xml:space="preserve"><value>Schedule</value></data>
+  <data name="Order.OrderDate" xml:space="preserve"><value>Order date</value></data>
+  <data name="Order.DeliveryDate" xml:space="preserve"><value>Delivery date</value></data>
+  <data name="Order.Urgent" xml:space="preserve"><value>Urgent order</value></data>
+  <data name="Order.Rush" xml:space="preserve"><value>rush</value></data>
+  <data name="Order.Payment" xml:space="preserve"><value>Payment</value></data>
+  <data name="Order.StitchingCharges" xml:space="preserve"><value>Stitching charges</value></data>
+  <data name="Order.AdvancePaid" xml:space="preserve"><value>Advance paid</value></data>
+  <data name="Order.BalanceDue" xml:space="preserve"><value>Balance due</value></data>
+  <data name="Order.Currency" xml:space="preserve"><value>Rs</value></data>
+  <data name="Order.NotesPlaceholder" xml:space="preserve"><value>Design notes, fit tweaks, delivery instructions...</value></data>
+  <data name="Order.DueFormat" xml:space="preserve"><value>Due {0}</value></data>
+
+  <data name="Garment.FullSuit" xml:space="preserve"><value>Full suit</value></data>
+  <data name="Garment.Kameez" xml:space="preserve"><value>Kameez</value></data>
+  <data name="Garment.Shalwar" xml:space="preserve"><value>Shalwar</value></data>
+
+  <data name="Occasion.Wedding" xml:space="preserve"><value>Wedding</value></data>
+  <data name="Occasion.Eid" xml:space="preserve"><value>Eid</value></data>
+  <data name="Occasion.Party" xml:space="preserve"><value>Party</value></data>
+  <data name="Occasion.Formal" xml:space="preserve"><value>Formal</value></data>
+  <data name="Occasion.Casual" xml:space="preserve"><value>Casual</value></data>
+
+  <data name="Cloth.CustomerBrought" xml:space="preserve"><value>Customer brought</value></data>
+  <data name="Cloth.ShopArranges" xml:space="preserve"><value>Shop arranges</value></data>
+
+  <data name="Fabric.WashAndWear" xml:space="preserve"><value>Wash &amp; Wear</value></data>
+  <data name="Fabric.Cotton" xml:space="preserve"><value>Cotton</value></data>
+  <data name="Fabric.Linen" xml:space="preserve"><value>Linen</value></data>
+  <data name="Fabric.Khaddar" xml:space="preserve"><value>Khaddar</value></data>
+  <data name="Fabric.Boski" xml:space="preserve"><value>Boski</value></data>
+  <data name="Fabric.Silk" xml:space="preserve"><value>Silk</value></data>
+
+  <data name="Status.Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Status.InProgress" xml:space="preserve"><value>In progress</value></data>
+  <data name="Status.Ready" xml:space="preserve"><value>Ready</value></data>
+  <data name="Status.Delivered" xml:space="preserve"><value>Delivered</value></data>
+  <data name="Status.Cancelled" xml:space="preserve"><value>Cancelled</value></data>
 </root>

@@ -133,7 +133,69 @@ internal static class CloudMappers
         };
     }
 
+    // ---- Order ----
+
+    public static Dictionary<string, object?> ToFields(Order o) => new()
+    {
+        ["customerId"] = o.CustomerId,
+        ["measurementSetId"] = o.MeasurementSetId,
+        ["garmentType"] = (int)o.GarmentType,
+        ["quantity"] = o.Quantity,
+        ["occasion"] = (int)o.Occasion,
+        ["clothProvider"] = (int)o.ClothProvider,
+        ["fabricType"] = (int)o.FabricType,
+        ["colour"] = o.Colour,
+        ["clothReceived"] = o.ClothReceived,
+        ["collarDesign"] = (int)o.CollarDesign,
+        ["cuffDesign"] = (int)o.CuffDesign,
+        ["orderDate"] = o.OrderDate,
+        ["deliveryDate"] = o.DeliveryDate,
+        ["isUrgent"] = o.IsUrgent,
+        ["stitchingCharges"] = o.StitchingCharges,
+        ["advancePaid"] = o.AdvancePaid,
+        ["balanceDue"] = o.BalanceDue,
+        ["notes"] = o.Notes,
+        ["status"] = (int)o.Status,
+        ["createdAt"] = o.CreatedAt,
+        ["updatedAt"] = o.UpdatedAt,
+        ["isDeleted"] = o.IsDeleted
+    };
+
+    public static Order ToOrder(FirestoreDocument doc)
+    {
+        var f = doc.Fields;
+        return new Order
+        {
+            Id = doc.Id,
+            CustomerId = GetString(f, "customerId") ?? string.Empty,
+            MeasurementSetId = GetString(f, "measurementSetId"),
+            GarmentType = GetEnum<GarmentType>(f, "garmentType"),
+            Quantity = GetInt(f, "quantity"),
+            Occasion = GetEnum<Occasion>(f, "occasion"),
+            ClothProvider = GetEnum<ClothProvider>(f, "clothProvider"),
+            FabricType = GetEnum<FabricType>(f, "fabricType"),
+            Colour = GetString(f, "colour"),
+            ClothReceived = GetBool(f, "clothReceived"),
+            CollarDesign = GetEnum<CollarDesign>(f, "collarDesign"),
+            CuffDesign = GetEnum<CuffDesign>(f, "cuffDesign"),
+            OrderDate = GetDateTime(f, "orderDate"),
+            DeliveryDate = GetDateTime(f, "deliveryDate"),
+            IsUrgent = GetBool(f, "isUrgent"),
+            StitchingCharges = GetDoubleN(f, "stitchingCharges") ?? 0,
+            AdvancePaid = GetDoubleN(f, "advancePaid") ?? 0,
+            Notes = GetString(f, "notes"),
+            Status = GetEnum<OrderStatus>(f, "status"),
+            CreatedAt = GetDateTime(f, "createdAt"),
+            UpdatedAt = GetDateTime(f, "updatedAt"),
+            IsDeleted = GetBool(f, "isDeleted")
+        };
+    }
+
     // ---- Field readers (defensive about numeric type drift) ----
+
+    private static int GetInt(IReadOnlyDictionary<string, object?> f, string key)
+        => (int)(GetDoubleN(f, key) ?? 0);
+
 
     private static string? GetString(IReadOnlyDictionary<string, object?> f, string key)
         => f.TryGetValue(key, out var v) ? v as string : null;

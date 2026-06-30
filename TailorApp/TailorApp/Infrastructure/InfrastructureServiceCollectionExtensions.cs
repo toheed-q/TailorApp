@@ -28,6 +28,7 @@ public static class InfrastructureServiceCollectionExtensions
         // Feature services. Stateless, so singleton keeps allocations low.
         services.AddSingleton<ICustomerService, CustomerService>();
         services.AddSingleton<IMeasurementService, MeasurementService>();
+        services.AddSingleton<IOrderService, OrderService>();
 
         // ---- Cloud sync (Phase 5) ----
         // API key is a public client identifier; data access is gated by Auth +

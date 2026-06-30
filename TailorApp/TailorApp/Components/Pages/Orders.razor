@@ -1,5 +1,7 @@
 @page "/orders"
 @implements IDisposable
+@inject IOrderService OrderService
+@inject ICustomerService CustomerService
 @inject ILocalizationService Loc
 
 <!-- Header -->
@@ -7,51 +9,93 @@
     <h1 class="font-serif text-2xl font-bold text-ink">@Loc["Nav.Orders"]</h1>
 </header>
 
-<!-- List (no orders yet — creation comes later) -->
-<div class="mt-4">
-    <div class="app-card px-4 py-12 text-center">
-        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cream-line text-subtle">
-            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 8h12l-.8 11a1 1 0 0 1-1 .9H7.8a1 1 0 0 1-1-.9z" /><path d="M9 8V7a3 3 0 0 1 6 0v1" />
-            </svg>
+<div class="mt-4 space-y-3">
+    @if (_loading)
+    {
+        <div class="app-card px-4 py-8 text-center text-sm text-subtle">@Loc["Common.Loading"]</div>
+    }
+    else if (_orders.Count == 0)
+    {
+        <div class="app-card px-4 py-12 text-center">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cream-line text-subtle">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8h12l-.8 11a1 1 0 0 1-1 .9H7.8a1 1 0 0 1-1-.9z" /><path d="M9 8V7a3 3 0 0 1 6 0v1" />
+                </svg>
+            </div>
+            <p class="mt-3 text-sm text-subtle">@Loc["Orders.Empty"]</p>
         </div>
-        <p class="mt-3 text-sm text-subtle">@Loc["Orders.Empty"]</p>
-    </div>
+    }
+    else
+    {
+        @foreach (var o in _orders)
+        {
+            <a href="@($"/orders/{o.Id}/edit")" class="app-card flex items-center gap-3 p-4">
+                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blush text-sm font-semibold text-brick">
+                    @DisplayFormat.Initials(CustomerName(o))
+                </span>
+                <div class="min-w-0 flex-1">
+                    <p class="truncate font-semibold text-ink">@CustomerName(o)</p>
+                    <p class="mt-0.5 truncate text-sm text-subtle">
+                        @Loc[$"Garment.{o.GarmentType}"] · @o.Quantity @Unit(o)
+                        @if (o.IsUrgent)
+                        {
+                            <span class="font-medium text-brick"> · @Loc["Order.Rush"]</span>
+                        }
+                    </p>
+                    <p class="mt-0.5 truncate text-xs text-subtle">@string.Format(Loc["Order.DueFormat"], o.DeliveryDate.ToLocalTime().ToString("d MMM"))</p>
+                </div>
+                <div class="flex shrink-0 flex-col items-end gap-1">
+                    <span class="@StatusClass(o.Status)">@Loc[$"Status.{o.Status}"]</span>
+                    @if (o.BalanceDue > 0)
+                    {
+                        <span class="text-xs font-semibold text-ink">@Loc["Order.Currency"] @DisplayFormat.Amount(o.BalanceDue)</span>
+                    }
+                </div>
+            </a>
+        }
+        <div class="h-20"></div>
+    }
 </div>
 
-<!-- Floating Create order button (aligned to the centered frame) -->
+<!-- Floating Create order button -->
 <div class="pointer-events-none fixed inset-x-0 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-30 mx-auto flex max-w-md justify-end px-5">
-    <button type="button" @onclick="CreateOrderAsync"
-            class="pointer-events-auto flex items-center gap-2 rounded-full bg-brick px-5 py-3.5 font-medium text-white shadow-card">
+    <a href="/orders/new"
+       class="pointer-events-auto flex items-center gap-2 rounded-full bg-brick px-5 py-3.5 font-medium text-white shadow-card">
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M12 5v14" /><path d="M5 12h14" />
         </svg>
         @Loc["Orders.Create"]
-    </button>
+    </a>
 </div>
 
-@if (_toast is not null)
-{
-    <div class="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-6">
-        <div class="rounded-full bg-ink/90 px-5 py-2.5 text-sm font-medium text-white shadow-card">@_toast</div>
-    </div>
-}
-
 @code {
-    private string? _toast;
+    private IReadOnlyList<Order> _orders = Array.Empty<Order>();
+    private Dictionary<string, Customer> _customersById = new();
+    private bool _loading = true;
 
     protected override void OnInitialized()
         => Loc.LanguageChanged += OnLanguageChanged;
 
-    private async Task CreateOrderAsync()
+    protected override async Task OnInitializedAsync()
     {
-        // The order creation flow is not built yet.
-        _toast = Loc["Settings.ComingSoon"];
-        StateHasChanged();
-        await Task.Delay(2500);
-        _toast = null;
-        StateHasChanged();
+        _orders = await OrderService.GetAllAsync();
+        _customersById = (await CustomerService.GetAllAsync()).ToDictionary(c => c.Id);
+        _loading = false;
+    }
+
+    private string CustomerName(Order o)
+        => _customersById.TryGetValue(o.CustomerId, out var c) ? c.Name : "—";
+
+    private string Unit(Order o)
+        => o.GarmentType == GarmentType.FullSuit ? Loc["Order.UnitSuits"] : Loc["Order.UnitPieces"];
+
+    private static string StatusClass(OrderStatus status)
+    {
+        var tone = status is OrderStatus.Delivered or OrderStatus.Cancelled
+            ? "bg-cream-line text-subtle"
+            : "bg-blush text-brick";
+        return $"rounded-full px-2.5 py-0.5 text-xs font-medium {tone}";
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)

@@ -168,4 +168,67 @@
   <data name="Settings.ShopCity" xml:space="preserve"><value>شہر</value></data>
   <data name="Settings.SignInHint" xml:space="preserve"><value>کلاؤڈ پر بیک اپ کے لیے سائن ان کریں۔</value></data>
   <data name="Settings.SignedIn" xml:space="preserve"><value>آپ سائن ان ہیں۔ اپنا ڈیٹا کلاؤڈ پر بیک اپ کریں۔</value></data>
+
+  <data name="Common.NotSet" xml:space="preserve"><value>غیر متعین</value></data>
+  <data name="Common.Adjust" xml:space="preserve"><value>تبدیل کریں</value></data>
+
+  <data name="Order.New" xml:space="preserve"><value>نیا آرڈر</value></data>
+  <data name="Order.Edit" xml:space="preserve"><value>آرڈر میں ترمیم</value></data>
+  <data name="Order.Customer" xml:space="preserve"><value>گاہک</value></data>
+  <data name="Order.Change" xml:space="preserve"><value>تبدیل کریں</value></data>
+  <data name="Order.SelectCustomer" xml:space="preserve"><value>گاہک منتخب کریں</value></data>
+  <data name="Order.Section" xml:space="preserve"><value>آرڈر</value></data>
+  <data name="Order.Garment" xml:space="preserve"><value>لباس</value></data>
+  <data name="Order.Quantity" xml:space="preserve"><value>تعداد</value></data>
+  <data name="Order.UnitSuits" xml:space="preserve"><value>سوٹ</value></data>
+  <data name="Order.UnitPieces" xml:space="preserve"><value>عدد</value></data>
+  <data name="Order.Occasion" xml:space="preserve"><value>موقع</value></data>
+  <data name="Order.Cloth" xml:space="preserve"><value>کپڑا</value></data>
+  <data name="Order.ProvidedBy" xml:space="preserve"><value>فراہم کنندہ</value></data>
+  <data name="Order.FabricType" xml:space="preserve"><value>کپڑے کی قسم</value></data>
+  <data name="Order.Colour" xml:space="preserve"><value>رنگ</value></data>
+  <data name="Order.ColourPlaceholder" xml:space="preserve"><value>مثلاً چارکول گرے</value></data>
+  <data name="Order.ClothReceived" xml:space="preserve"><value>کپڑا موصول ہوا</value></data>
+  <data name="Order.SavedMeasurements" xml:space="preserve"><value>محفوظ ناپ</value></data>
+  <data name="Order.NoMeasurements" xml:space="preserve"><value>کوئی محفوظ ناپ نہیں</value></data>
+  <data name="Order.MeasurementsKameezShalwar" xml:space="preserve"><value>قمیض اور شلوار</value></data>
+  <data name="Order.CollarHint" xml:space="preserve"><value>کالر — پروفائل سے، ضرورت ہو تو بدلیں</value></data>
+  <data name="Order.Schedule" xml:space="preserve"><value>شیڈول</value></data>
+  <data name="Order.OrderDate" xml:space="preserve"><value>آرڈر کی تاریخ</value></data>
+  <data name="Order.DeliveryDate" xml:space="preserve"><value>ڈیلیوری کی تاریخ</value></data>
+  <data name="Order.Urgent" xml:space="preserve"><value>فوری آرڈر</value></data>
+  <data name="Order.Rush" xml:space="preserve"><value>فوری</value></data>
+  <data name="Order.Payment" xml:space="preserve"><value>ادائیگی</value></data>
+  <data name="Order.StitchingCharges" xml:space="preserve"><value>سلائی کے چارجز</value></data>
+  <data name="Order.AdvancePaid" xml:space="preserve"><value>پیشگی ادا شدہ</value></data>
+  <data name="Order.BalanceDue" xml:space="preserve"><value>باقی رقم</value></data>
+  <data name="Order.Currency" xml:space="preserve"><value>روپے</value></data>
+  <data name="Order.NotesPlaceholder" xml:space="preserve"><value>ڈیزائن نوٹس، فٹنگ، ڈیلیوری ہدایات...</value></data>
+  <data name="Order.DueFormat" xml:space="preserve"><value>ڈیلیوری {0}</value></data>
+
+  <data name="Garment.FullSuit" xml:space="preserve"><value>مکمل سوٹ</value></data>
+  <data name="Garment.Kameez" xml:space="preserve"><value>قمیض</value></data>
+  <data name="Garment.Shalwar" xml:space="preserve"><value>شلوار</value></data>
+
+  <data name="Occasion.Wedding" xml:space="preserve"><value>شادی</value></data>
+  <data name="Occasion.Eid" xml:space="preserve"><value>عید</value></data>
+  <data name="Occasion.Party" xml:space="preserve"><value>پارٹی</value></data>
+  <data name="Occasion.Formal" xml:space="preserve"><value>رسمی</value></data>
+  <data name="Occasion.Casual" xml:space="preserve"><value>غیر رسمی</value></data>
+
+  <data name="Cloth.CustomerBrought" xml:space="preserve"><value>گاہک لایا</value></data>
+  <data name="Cloth.ShopArranges" xml:space="preserve"><value>دکان فراہم کرے</value></data>
+
+  <data name="Fabric.WashAndWear" xml:space="preserve"><value>واش اینڈ ویئر</value></data>
+  <data name="Fabric.Cotton" xml:space="preserve"><value>سوتی</value></data>
+  <data name="Fabric.Linen" xml:space="preserve"><value>لینن</value></data>
+  <data name="Fabric.Khaddar" xml:space="preserve"><value>کھدر</value></data>
+  <data name="Fabric.Boski" xml:space="preserve"><value>بوسکی</value></data>
+  <data name="Fabric.Silk" xml:space="preserve"><value>ریشم</value></data>
+
+  <data name="Status.Pending" xml:space="preserve"><value>زیر التواء</value></data>
+  <data name="Status.InProgress" xml:space="preserve"><value>جاری</value></data>
+  <data name="Status.Ready" xml:space="preserve"><value>تیار</value></data>
+  <data name="Status.Delivered" xml:space="preserve"><value>ڈیلیور ہو گیا</value></data>
+  <data name="Status.Cancelled" xml:space="preserve"><value>منسوخ</value></data>
 </root>

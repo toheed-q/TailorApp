@@ -1,6 +1,7 @@
 @page "/"
 @implements IDisposable
 @inject ICustomerService CustomerService
+@inject IOrderService OrderService
 @inject ILocalizationService Loc
 @inject IAppSettingsService Settings
 @inject NavigationManager Nav
@@ -180,9 +181,9 @@
     protected override async Task OnInitializedAsync()
     {
         _totalCustomers = await CustomerService.CountAsync();
-        // Orders are a separate concept from a customer's measurements; adding a
-        // customer no longer counts as an order. Real orders are created on the
-        // Orders page (count stays 0 until that feature lands).
+        // Orders are tracked separately from a customer's measurements — adding a
+        // customer does not create an order. This counts real orders only.
+        _recentOrders = await OrderService.CountRecentAsync(30);
         _recent = await CustomerService.GetRecentAsync(5);
         _loading = false;
     }

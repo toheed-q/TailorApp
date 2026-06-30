@@ -64,6 +64,10 @@ public static class DisplayFormat
     public static double ToInches(double value, MeasurementUnit unit)
         => unit == MeasurementUnit.Centimeters ? value / CmPerInch : value;
 
+    /// <summary>Formats a money amount with thousands separators (no decimals), e.g. 2400 → "2,400".</summary>
+    public static string Amount(double value)
+        => value.ToString("#,0", CultureInfo.InvariantCulture);
+
     /// <summary>Formats a stored inch value in the chosen unit (cm to 1 dp, inches to 2 dp).</summary>
     public static string Measurement(double inches, MeasurementUnit unit)
     {

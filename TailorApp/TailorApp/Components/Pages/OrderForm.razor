@@ -1,0 +1,516 @@
+@page "/orders/new"
+@page "/orders/{Id}/edit"
+@using System.Globalization
+@implements IDisposable
+@inject ICustomerService CustomerService
+@inject IMeasurementService MeasurementService
+@inject IOrderService OrderService
+@inject ILocalizationService Loc
+@inject NavigationManager Nav
+
+<EditForm Model="_input" OnValidSubmit="SaveAsync">
+    <DataAnnotationsValidator />
+
+    <!-- Header -->
+    <header class="flex items-center gap-2 pt-2">
+        <button type="button" @onclick="GoBack" aria-label="@Loc["Common.Cancel"]"
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink">
+            <svg class="h-6 w-6 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6" /></svg>
+        </button>
+        <h1 class="flex-1 font-serif text-2xl font-bold text-ink">@(_isEdit ? Loc["Order.Edit"] : Loc["Order.New"])</h1>
+        <button type="submit" disabled="@_saving" class="shrink-0 px-2 text-base font-semibold text-brick disabled:opacity-50">@Loc["Common.Save"]</button>
+    </header>
+
+    @if (_loading)
+    {
+        <div class="mt-16 text-center text-subtle">@Loc["Common.Loading"]</div>
+    }
+    else if (_notFound)
+    {
+        <div class="app-card mt-6 px-4 py-8 text-center text-sm text-subtle">@Loc["Common.NoResults"]</div>
+    }
+    else
+    {
+        <!-- ===== Customer ===== -->
+        <SectionHeading Title="@Loc["Order.Customer"]" />
+        @if (_customer is null)
+        {
+            <button type="button" @onclick="OpenCustomerPicker"
+                    class="mt-3 flex w-full items-center gap-3 rounded-card border border-dashed border-cream-border bg-cream-card p-4 text-start">
+                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream-line text-subtle">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
+                </span>
+                <span class="font-medium text-ink">@Loc["Order.SelectCustomer"]</span>
+            </button>
+        }
+        else
+        {
+            <div class="app-card mt-3 flex items-center gap-3 border-s-4 border-brick p-4">
+                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blush text-sm font-semibold text-brick">
+                    @DisplayFormat.Initials(_customer.Name)
+                </span>
+                <div class="min-w-0 flex-1">
+                    <p class="truncate font-semibold text-ink">@_customer.Name</p>
+                    <p class="mt-0.5 truncate text-sm text-subtle">
+                        @if (!string.IsNullOrWhiteSpace(_customer.PhoneNumber))
+                        {
+                            <span>@_customer.PhoneNumber · </span>
+                        }
+                        <span>#@_customer.Id[..Math.Min(4, _customer.Id.Length)].ToUpperInvariant()</span>
+                    </p>
+                </div>
+                <button type="button" @onclick="OpenCustomerPicker" class="shrink-0 text-sm font-semibold text-brick">@Loc["Order.Change"]</button>
+            </div>
+        }
+        <ValidationMessage For="() => _input.CustomerId" class="mt-1 block text-xs text-brick" />
+
+        <!-- ===== Order ===== -->
+        <SectionHeading Title="@Loc["Order.Section"]" />
+
+        <p class="mt-3 text-sm font-medium text-ink">@Loc["Order.Garment"]</p>
+        <div class="mt-2 grid grid-cols-3 gap-1 rounded-full bg-cream-line p-1">
+            @foreach (var g in Garments)
+            {
+                <button type="button" @onclick="() => _input.GarmentType = g" class="@SegClass(_input.GarmentType == g)">@Loc[$"Garment.{g}"]</button>
+            }
+        </div>
+
+        <div class="mt-3 grid grid-cols-2 gap-3">
+            <div class="app-card p-3">
+                <p class="truncate text-sm font-medium text-subtle">@Loc["Order.Quantity"]</p>
+                <div class="mt-2 flex items-center gap-1">
+                    <button type="button" @onclick="() => AdjustQty(-1)" aria-label="−"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cream-line text-ink active:scale-95">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14" /></svg>
+                    </button>
+                    <div class="flex flex-1 items-baseline justify-center gap-1">
+                        <span class="text-2xl font-bold text-ink">@_input.Quantity</span>
+                        <span class="text-xs text-subtle">@QtyUnit</span>
+                    </div>
+                    <button type="button" @onclick="() => AdjustQty(1)" aria-label="+"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cream-line text-ink active:scale-95">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="app-card p-3">
+                <p class="truncate text-sm font-medium text-subtle">@Loc["Order.Occasion"] <span class="font-normal">· @Loc["Form.Optional"]</span></p>
+                <div class="relative mt-2">
+                    <InputSelect @bind-Value="_input.Occasion" class="app-select">
+                        @foreach (var o in Occasions)
+                        {
+                            <option value="@o">@OccasionLabel(o)</option>
+                        }
+                    </InputSelect>
+                    <span class="pointer-events-none absolute inset-y-0 end-3 flex items-center text-subtle">@ChevronDown</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Cloth ===== -->
+        <SectionHeading Title="@Loc["Order.Cloth"]" />
+
+        <p class="mt-3 text-sm font-medium text-ink">@Loc["Order.ProvidedBy"]</p>
+        <div class="mt-2 grid grid-cols-2 gap-1 rounded-full bg-cream-line p-1">
+            <button type="button" @onclick="() => _input.ClothProvider = ClothProvider.CustomerBrought" class="@SegClass(_input.ClothProvider == ClothProvider.CustomerBrought)">@Loc["Cloth.CustomerBrought"]</button>
+            <button type="button" @onclick="() => _input.ClothProvider = ClothProvider.ShopArranges" class="@SegClass(_input.ClothProvider == ClothProvider.ShopArranges)">@Loc["Cloth.ShopArranges"]</button>
+        </div>
+
+        <div class="mt-3">
+            <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Order.FabricType"] <span class="font-normal text-subtle">· @Loc["Form.Optional"]</span></label>
+            <div class="relative">
+                <InputSelect @bind-Value="_input.FabricType" class="app-select">
+                    @foreach (var ft in Fabrics)
+                    {
+                        <option value="@ft">@FabricLabel(ft)</option>
+                    }
+                </InputSelect>
+                <span class="pointer-events-none absolute inset-y-0 end-3 flex items-center text-subtle">@ChevronDown</span>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label class="mb-1.5 block text-sm font-medium text-ink">@Loc["Order.Colour"] <span class="font-normal text-subtle">· @Loc["Form.Optional"]</span></label>
+            <InputText @bind-Value="_input.Colour" placeholder="@Loc["Order.ColourPlaceholder"]" class="app-input" autocomplete="off" />
+        </div>
+
+        <div class="mt-3">
+            <ToggleRow Label="@Loc["Order.ClothReceived"]" @bind-Value="_input.ClothReceived" />
+        </div>
+
+        <!-- ===== Measurements ===== -->
+        <SectionHeading Title="@Loc["Measurement.Title"]" />
+        <div class="app-card mt-3 flex items-center gap-3 p-4">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-tile bg-cream-line text-ink">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7h18v10H3z" /><path d="M7 7v3" /><path d="M11 7v5" /><path d="M15 7v3" /><path d="M19 7v5" />
+                </svg>
+            </span>
+            <div class="min-w-0 flex-1">
+                <p class="font-semibold text-ink">@Loc["Order.SavedMeasurements"]</p>
+                <p class="truncate text-sm text-subtle">@MeasurementsSummary</p>
+            </div>
+            @if (_customer is not null)
+            {
+                <a href="@($"/customers/{_input.CustomerId}/edit")" class="shrink-0 text-sm font-semibold text-brick">@Loc["Common.Adjust"]</a>
+            }
+        </div>
+
+        <!-- ===== Design ===== -->
+        <SectionHeading Title="@Loc["Form.Design"]" />
+        <p class="mt-3 text-sm font-medium text-subtle">@Loc["Order.CollarHint"]</p>
+        <div class="mt-2 grid grid-cols-3 gap-3">
+            <ChoiceCard Label="@Loc["Design.Ban"]" Selected="@(_input.CollarDesign == CollarDesign.Ban)" OnClick="() => SetCollar(CollarDesign.Ban)">
+                <Icon><svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v5a6 6 0 0 0 12 0V4" /></svg></Icon>
+            </ChoiceCard>
+            <ChoiceCard Label="@Loc["Design.Shirt"]" Selected="@(_input.CollarDesign == CollarDesign.Shirt)" OnClick="() => SetCollar(CollarDesign.Shirt)">
+                <Icon><svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5v4l7 6 7-6V5" /><path d="M5 5 12 9l7-4" /></svg></Icon>
+            </ChoiceCard>
+            <ChoiceCard Label="@Loc["Design.Sherwani"]" Selected="@(_input.CollarDesign == CollarDesign.Sherwani)" OnClick="() => SetCollar(CollarDesign.Sherwani)">
+                <Icon><svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v5a6 6 0 0 0 12 0V4" /><path d="M12 4v10" /></svg></Icon>
+            </ChoiceCard>
+        </div>
+
+        <p class="mt-4 text-sm font-medium text-ink">@Loc["Design.Cuff"]</p>
+        <div class="mt-2 grid grid-cols-3 gap-3">
+            <ChoiceCard Label="@Loc["Design.CuffPlain"]" Selected="@(_input.CuffDesign == CuffDesign.Plain)" OnClick="() => SetCuff(CuffDesign.Plain)">
+                <Icon><svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="2.5" /></svg></Icon>
+            </ChoiceCard>
+            <ChoiceCard Label="@Loc["Design.CuffOne"]" Selected="@(_input.CuffDesign == CuffDesign.OneButton)" OnClick="() => SetCuff(CuffDesign.OneButton)">
+                <Icon><svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="2.5" /><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" /></svg></Icon>
+            </ChoiceCard>
+            <ChoiceCard Label="@Loc["Design.CuffTwo"]" Selected="@(_input.CuffDesign == CuffDesign.TwoButton)" OnClick="() => SetCuff(CuffDesign.TwoButton)">
+                <Icon><svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="2.5" /><circle cx="9.5" cy="12" r="1.4" fill="currentColor" stroke="none" /><circle cx="14.5" cy="12" r="1.4" fill="currentColor" stroke="none" /></svg></Icon>
+            </ChoiceCard>
+        </div>
+
+        <!-- ===== Schedule ===== -->
+        <SectionHeading Title="@Loc["Order.Schedule"]" />
+        <div class="mt-3 grid grid-cols-2 gap-3">
+            <div class="app-card relative p-3">
+                <p class="truncate text-sm font-medium text-subtle">@Loc["Order.OrderDate"]</p>
+                <div class="mt-2 flex items-center gap-2">
+                    @CalendarIcon
+                    <span class="text-lg font-bold text-ink">@_input.OrderDate.ToString("d MMM")</span>
+                    <span class="ms-auto text-subtle">@ChevronDown</span>
+                </div>
+                <InputDate @bind-Value="_input.OrderDate" class="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
+            </div>
+            <div class="app-card relative border border-brick p-3">
+                <p class="truncate text-sm font-medium text-subtle">@Loc["Order.DeliveryDate"]</p>
+                <div class="mt-2 flex items-center gap-2">
+                    @CalendarIcon
+                    <span class="text-lg font-bold text-ink">@_input.DeliveryDate.ToString("d MMM")</span>
+                    <span class="ms-auto text-subtle">@ChevronDown</span>
+                </div>
+                <InputDate @bind-Value="_input.DeliveryDate" class="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
+            </div>
+        </div>
+        <div class="mt-3">
+            <ToggleRow Label="@Loc["Order.Urgent"]" Optional="false" @bind-Value="_input.IsUrgent" />
+        </div>
+
+        <!-- ===== Payment ===== -->
+        <SectionHeading Title="@Loc["Order.Payment"]" />
+
+        <p class="mt-3 text-sm font-medium text-ink">@Loc["Order.StitchingCharges"]</p>
+        <div class="app-card mt-2 flex items-center gap-3 p-4">
+            <span class="shrink-0 text-sm font-semibold text-subtle">@Loc["Order.Currency"]</span>
+            <input @key="_payRev" type="text" inputmode="numeric" value="@DisplayFormat.Amount(_input.StitchingCharges)"
+                   @onchange="OnStitchingInput" class="w-full bg-transparent text-lg font-bold text-ink focus:outline-none" />
+        </div>
+
+        <p class="mt-3 text-sm font-medium text-ink">@Loc["Order.AdvancePaid"] <span class="font-normal text-subtle">· @Loc["Form.Optional"]</span></p>
+        <div class="app-card mt-2 flex items-center gap-3 p-4">
+            <span class="shrink-0 text-sm font-semibold text-subtle">@Loc["Order.Currency"]</span>
+            <input @key="_payRev" type="text" inputmode="numeric" value="@DisplayFormat.Amount(_input.AdvancePaid)"
+                   @onchange="OnAdvanceInput" class="w-full bg-transparent text-lg font-bold text-ink focus:outline-none" />
+        </div>
+
+        <div class="app-card mt-3 flex items-center justify-between border-s-4 border-brick px-4 py-4">
+            <span class="font-bold text-ink">@Loc["Order.BalanceDue"]</span>
+            <span class="font-serif text-lg font-bold text-brick">@Loc["Order.Currency"] @DisplayFormat.Amount(Balance)</span>
+        </div>
+
+        <!-- ===== Notes ===== -->
+        <SectionHeading Title="@Loc["Customer.Notes"]" />
+        <div class="mt-3">
+            <InputTextArea @bind-Value="_input.Notes" rows="3" placeholder="@Loc["Order.NotesPlaceholder"]" class="app-input" />
+        </div>
+
+        @if (_error is not null)
+        {
+            <p class="mt-5 text-sm text-brick">@_error</p>
+        }
+
+        <div class="h-28"></div>
+    }
+
+    @if (!_loading && !_notFound)
+    {
+        <div class="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-md bg-cream/95 px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+            <button type="submit" disabled="@_saving"
+                    class="flex w-full items-center justify-center gap-2 rounded-full bg-brick py-3.5 font-medium text-white shadow-card disabled:opacity-60">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 6" /></svg>
+                @(_isEdit ? Loc["Common.Save"] : Loc["Orders.Create"])
+            </button>
+        </div>
+    }
+</EditForm>
+
+<!-- Customer picker -->
+@if (_showCustomerPicker)
+{
+    <div class="fixed inset-0 z-40 flex items-end justify-center bg-ink/40" @onclick="() => _showCustomerPicker = false">
+        <div class="flex max-h-[80vh] w-full max-w-md flex-col rounded-t-card bg-cream-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-card"
+             @onclick:stopPropagation="true">
+            <h3 class="font-serif text-lg font-bold text-ink">@Loc["Order.SelectCustomer"]</h3>
+            <div class="mt-3 flex items-center gap-2 rounded-full bg-cream-line px-4 py-2.5">
+                <svg class="h-4 w-4 shrink-0 text-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.2-3.2" /></svg>
+                <input @bind="_pickerQuery" @bind:event="oninput" placeholder="@Loc["Home.SearchPlaceholder"]"
+                       class="w-full bg-transparent text-ink placeholder:text-subtle focus:outline-none" />
+            </div>
+            <div class="mt-3 space-y-2 overflow-y-auto">
+                @if (!PickerFiltered.Any())
+                {
+                    <div class="py-6 text-center text-sm text-subtle">
+                        @Loc["Customers.Empty"]
+                        <a href="/customers/new" class="mt-2 block font-semibold text-brick">@Loc["Home.AddCustomer"]</a>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var c in PickerFiltered)
+                    {
+                        <button type="button" @onclick="() => PickCustomer(c)" class="flex w-full items-center gap-3 rounded-card p-2 text-start">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blush text-xs font-semibold text-brick">@DisplayFormat.Initials(c.Name)</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate font-semibold text-ink">@c.Name</p>
+                                @if (!string.IsNullOrWhiteSpace(c.PhoneNumber))
+                                {
+                                    <p class="truncate text-sm text-subtle">@c.PhoneNumber</p>
+                                }
+                            </div>
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Parameter, SupplyParameterFromQuery] public string? CustomerId { get; set; }
+
+    private static readonly GarmentType[] Garments = { GarmentType.FullSuit, GarmentType.Kameez, GarmentType.Shalwar };
+    private static readonly Occasion[] Occasions = { Occasion.Unspecified, Occasion.Wedding, Occasion.Eid, Occasion.Party, Occasion.Formal, Occasion.Casual };
+    private static readonly FabricType[] Fabrics = { FabricType.Unspecified, FabricType.WashAndWear, FabricType.Cotton, FabricType.Linen, FabricType.Khaddar, FabricType.Boski, FabricType.Silk };
+
+    private readonly OrderInput _input = new();
+    private Customer? _customer;
+    private MeasurementSet? _measurements;
+    private IReadOnlyList<Customer> _allCustomers = Array.Empty<Customer>();
+
+    private bool _isEdit;
+    private bool _loading;
+    private bool _saving;
+    private bool _notFound;
+    private bool _initialized;
+    private string? _error;
+
+    private bool _showCustomerPicker;
+    private string _pickerQuery = string.Empty;
+    private int _payRev;
+
+    protected override void OnInitialized()
+        => Loc.LanguageChanged += OnLanguageChanged;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_initialized)
+            return;
+        _initialized = true;
+
+        _allCustomers = await CustomerService.GetAllAsync();
+        _isEdit = !string.IsNullOrEmpty(Id);
+
+        if (_isEdit)
+        {
+            _loading = true;
+            var order = await OrderService.GetByIdAsync(Id!);
+            if (order is null)
+            {
+                _notFound = true;
+                _loading = false;
+                return;
+            }
+            LoadFromOrder(order);
+            await LoadCustomerAsync(order.CustomerId, applyProfile: false);
+            _loading = false;
+        }
+        else
+        {
+            _input.OrderDate = DateTime.Today;
+            _input.DeliveryDate = DateTime.Today.AddDays(7);
+            if (!string.IsNullOrEmpty(CustomerId))
+                await LoadCustomerAsync(CustomerId, applyProfile: true);
+        }
+    }
+
+    private void LoadFromOrder(Order o)
+    {
+        _input.CustomerId = o.CustomerId;
+        _input.MeasurementSetId = o.MeasurementSetId;
+        _input.GarmentType = o.GarmentType;
+        _input.Quantity = o.Quantity;
+        _input.Occasion = o.Occasion;
+        _input.ClothProvider = o.ClothProvider;
+        _input.FabricType = o.FabricType;
+        _input.Colour = o.Colour;
+        _input.ClothReceived = o.ClothReceived;
+        _input.CollarDesign = o.CollarDesign;
+        _input.CuffDesign = o.CuffDesign;
+        _input.OrderDate = o.OrderDate;
+        _input.DeliveryDate = o.DeliveryDate;
+        _input.IsUrgent = o.IsUrgent;
+        _input.StitchingCharges = o.StitchingCharges;
+        _input.AdvancePaid = o.AdvancePaid;
+        _input.Notes = o.Notes;
+        _input.Status = o.Status;
+    }
+
+    // Loads the customer for display + their saved measurements. When applyProfile
+    // is true, also seeds the order's measurement link and design from the profile.
+    private async Task LoadCustomerAsync(string customerId, bool applyProfile)
+    {
+        var customer = _allCustomers.FirstOrDefault(c => c.Id == customerId)
+            ?? await CustomerService.GetByIdAsync(customerId);
+        if (customer is null)
+            return;
+
+        _customer = customer;
+        _input.CustomerId = customer.Id;
+
+        var latest = (await MeasurementService.GetHistoryAsync(customer.Id)).FirstOrDefault();
+        _measurements = latest?.Measurements;
+
+        if (applyProfile)
+        {
+            _input.MeasurementSetId = latest?.Measurements.Id;
+            if (latest?.Design is { } d)
+            {
+                _input.CollarDesign = d.CollarDesign;
+                _input.CuffDesign = d.CuffDesign;
+            }
+        }
+    }
+
+    private void OpenCustomerPicker()
+    {
+        _pickerQuery = string.Empty;
+        _showCustomerPicker = true;
+    }
+
+    private async Task PickCustomer(Customer customer)
+    {
+        _showCustomerPicker = false;
+        await LoadCustomerAsync(customer.Id, applyProfile: true);
+    }
+
+    private IEnumerable<Customer> PickerFiltered
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_pickerQuery))
+                return _allCustomers;
+            var q = _pickerQuery.Trim();
+            return _allCustomers.Where(c =>
+                c.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                (c.PhoneNumber?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+    }
+
+    private string MeasurementsSummary => _measurements is null
+        ? Loc["Order.NoMeasurements"]
+        : $"{Loc["Order.MeasurementsKameezShalwar"]} · {_measurements.UpdatedAt.ToLocalTime():d MMM}";
+
+    private string QtyUnit => _input.GarmentType == GarmentType.FullSuit ? Loc["Order.UnitSuits"] : Loc["Order.UnitPieces"];
+
+    private string OccasionLabel(Occasion o) => o == Occasion.Unspecified ? Loc["Common.NotSet"] : Loc[$"Occasion.{o}"];
+    private string FabricLabel(FabricType f) => f == FabricType.Unspecified ? Loc["Common.NotSet"] : Loc[$"Fabric.{f}"];
+
+    private double Balance => Math.Max(0, _input.StitchingCharges - _input.AdvancePaid);
+
+    private static string SegClass(bool selected)
+        => "rounded-full py-2 text-sm font-medium " + (selected ? "bg-cream-card text-ink shadow-card" : "text-subtle");
+
+    private void AdjustQty(int delta) => _input.Quantity = Math.Clamp(_input.Quantity + delta, 1, 999);
+
+    private void SetCollar(CollarDesign value)
+        => _input.CollarDesign = _input.CollarDesign == value ? CollarDesign.Unspecified : value;
+
+    private void SetCuff(CuffDesign value)
+        => _input.CuffDesign = _input.CuffDesign == value ? CuffDesign.Unspecified : value;
+
+    private void OnStitchingInput(ChangeEventArgs e)
+    {
+        _payRev++;
+        _input.StitchingCharges = ParseAmount(e.Value?.ToString(), _input.StitchingCharges);
+    }
+
+    private void OnAdvanceInput(ChangeEventArgs e)
+    {
+        _payRev++;
+        _input.AdvancePaid = ParseAmount(e.Value?.ToString(), _input.AdvancePaid);
+    }
+
+    private static double ParseAmount(string? text, double fallback)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return 0;
+        text = text.Replace(",", string.Empty).Trim();
+        return double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var value) && value >= 0
+            ? Math.Round(value)
+            : fallback;
+    }
+
+    private async Task SaveAsync()
+    {
+        _saving = true;
+        _error = null;
+        try
+        {
+            if (_isEdit)
+                await OrderService.UpdateAsync(Id!, _input);
+            else
+                await OrderService.AddAsync(_input);
+
+            Nav.NavigateTo("/orders");
+        }
+        catch (ValidationFailedException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (EntityNotFoundException)
+        {
+            _error = Loc["Order.SelectCustomer"];
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void GoBack() => Nav.NavigateTo("/orders");
+
+    private RenderFragment ChevronDown => @<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>;
+
+    private RenderFragment CalendarIcon => @<svg class="h-5 w-5 shrink-0 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5" /><path d="M3.5 9h17" /><path d="M8 3v3" /><path d="M16 3v3" /></svg>;
+
+    private void OnLanguageChanged(object? sender, EventArgs e) => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Loc.LanguageChanged -= OnLanguageChanged;
+}

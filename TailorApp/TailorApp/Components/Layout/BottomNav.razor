@@ -58,9 +58,9 @@
     private string Relative =>
         Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#')[0].Trim('/');
 
-    // Full-screen flows (add/edit customer) replace the nav with their own action bar.
+    // Full-screen create/edit flows replace the nav with their own action bar.
     private bool Hidden =>
-        Relative == "customers/new" ||
+        Relative.EndsWith("/new", StringComparison.Ordinal) ||
         Relative.EndsWith("/edit", StringComparison.Ordinal);
 
     private bool IsActive(string route)

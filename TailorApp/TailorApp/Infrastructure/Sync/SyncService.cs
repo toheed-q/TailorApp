@@ -19,6 +19,7 @@ public sealed class SyncService : ISyncService
     private const string CustomersCollection = "customers";
     private const string MeasurementsCollection = "measurementSets";
     private const string DesignsCollection = "designPreferences";
+    private const string OrdersCollection = "orders";
 
     private readonly IDatabaseService _database;
     private readonly IFirestoreClient _firestore;
@@ -100,6 +101,7 @@ public sealed class SyncService : ISyncService
         pushed += await PushTableAsync<Customer>(connection, CustomersCollection, CloudMappers.ToFields, cancellationToken).ConfigureAwait(false);
         pushed += await PushTableAsync<MeasurementSet>(connection, MeasurementsCollection, CloudMappers.ToFields, cancellationToken).ConfigureAwait(false);
         pushed += await PushTableAsync<DesignPreference>(connection, DesignsCollection, CloudMappers.ToFields, cancellationToken).ConfigureAwait(false);
+        pushed += await PushTableAsync<Order>(connection, OrdersCollection, CloudMappers.ToFields, cancellationToken).ConfigureAwait(false);
         return pushed;
     }
 
@@ -136,6 +138,7 @@ public sealed class SyncService : ISyncService
         pulled += await PullTableAsync(connection, CustomersCollection, CloudMappers.ToCustomer, cancellationToken).ConfigureAwait(false);
         pulled += await PullTableAsync(connection, MeasurementsCollection, CloudMappers.ToMeasurementSet, cancellationToken).ConfigureAwait(false);
         pulled += await PullTableAsync(connection, DesignsCollection, CloudMappers.ToDesignPreference, cancellationToken).ConfigureAwait(false);
+        pulled += await PullTableAsync(connection, OrdersCollection, CloudMappers.ToOrder, cancellationToken).ConfigureAwait(false);
         return pulled;
     }
 
