@@ -112,6 +112,26 @@ public sealed class FirebaseAuthService : IFirebaseAuthService
         return IsSignedIn;
     }
 
+    public async Task<bool> EnsureSignedInAsync(CancellationToken cancellationToken = default)
+    {
+        // Already have a live session (or one that can be refreshed silently).
+        if (await GetValidIdTokenAsync(cancellationToken).ConfigureAwait(false) is not null)
+            return true;
+
+        // No usable session — sign in with the shop account baked into config.
+        try
+        {
+            await SignInAsync(_options.ShopEmail, _options.ShopPassword, cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (AuthenticationFailedException)
+        {
+            // Offline or misconfigured credentials: the app stays fully usable
+            // offline, so this is not fatal — cloud work is simply skipped.
+            return false;
+        }
+    }
+
     public Task SignOutAsync()
     {
         _idToken = null;

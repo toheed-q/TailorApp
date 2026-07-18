@@ -46,7 +46,14 @@ namespace TailorApp
                 await services.GetRequiredService<IFirebaseAuthService>()
                     .TryRestoreSessionAsync();
 
-                services.GetRequiredService<ISyncService>().StartAutoSync();
+                var sync = services.GetRequiredService<ISyncService>();
+
+                // Keep syncing whenever the device comes back online.
+                sync.StartAutoSync();
+
+                // Sync once on startup. SyncAsync signs in silently and no-ops
+                // when offline, so this is safe to fire unconditionally.
+                await sync.SyncAsync();
             }
             catch (Exception ex)
             {

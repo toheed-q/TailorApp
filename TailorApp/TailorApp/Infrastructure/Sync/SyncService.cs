@@ -65,11 +65,13 @@ public sealed class SyncService : ISyncService
         IsSyncing = true;
         try
         {
-            if (!_auth.IsSignedIn)
-                return Complete(SyncResult.Failed("Not signed in.", DateTime.UtcNow));
-
             if (!_connectivity.IsConnected)
                 return Complete(SyncResult.Failed("No internet connection.", DateTime.UtcNow));
+
+            // Signs in silently with the shop account the first time; afterwards
+            // the persisted session is refreshed automatically. No login screen.
+            if (!await _auth.EnsureSignedInAsync(cancellationToken).ConfigureAwait(false))
+                return Complete(SyncResult.Failed("Could not sign in to the cloud.", DateTime.UtcNow));
 
             _logger.LogInformation("Sync started.");
             var connection = await _database.GetConnectionAsync().ConfigureAwait(false);
@@ -213,7 +215,8 @@ public sealed class SyncService : ISyncService
 
     private async void OnConnectivityChanged(object? sender, bool isOnline)
     {
-        if (!isOnline || !_auth.IsSignedIn)
+        // SyncAsync signs in silently when needed, so no auth check here.
+        if (!isOnline)
             return;
 
         try

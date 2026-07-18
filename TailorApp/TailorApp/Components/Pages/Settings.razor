@@ -2,7 +2,6 @@
 @implements IDisposable
 @inject ILocalizationService Loc
 @inject IAppSettingsService Prefs
-@inject IFirebaseAuthService Auth
 @inject ISyncService Sync
 
 <!-- Header -->
@@ -75,7 +74,7 @@
 <!-- Your data -->
 <SectionHeading Title="@Loc["Settings.YourData"]" />
 <div class="app-card mt-3 divide-y divide-cream-line">
-    <button type="button" @onclick="OpenBackup" class="flex w-full items-center gap-3 px-4 py-3.5 text-start">
+    <button type="button" @onclick="BackUpNowAsync" disabled="@_backupBusy" class="flex w-full items-center gap-3 px-4 py-3.5 text-start disabled:opacity-60">
         <span class="@IconTile">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                  stroke-linecap="round" stroke-linejoin="round">
@@ -203,44 +202,6 @@
     </div>
 }
 
-@if (_showBackup)
-{
-    <div class="fixed inset-0 z-40 flex items-center justify-center bg-ink/40 px-6">
-        <div class="w-full max-w-sm rounded-card bg-cream-card p-5 shadow-card">
-            <h3 class="font-serif text-lg font-bold text-ink">@Loc["Settings.BackUp"]</h3>
-
-            @if (!Auth.IsSignedIn)
-            {
-                <p class="mt-2 text-sm text-subtle">@Loc["Settings.SignInHint"]</p>
-                <div class="mt-4 space-y-3">
-                    <input @bind="_email" type="email" inputmode="email" autocomplete="username"
-                           placeholder="@Loc["Auth.Email"]" class="app-input" />
-                    <input @bind="_password" type="password" autocomplete="current-password"
-                           placeholder="@Loc["Auth.Password"]" class="app-input" />
-                </div>
-            }
-            else
-            {
-                <p class="mt-2 text-sm text-subtle">@Loc["Settings.SignedIn"]</p>
-            }
-
-            @if (_backupError is not null)
-            {
-                <p class="mt-3 text-sm text-brick">@_backupError</p>
-            }
-
-            <div class="mt-5 flex gap-3">
-                <button type="button" @onclick="() => _showBackup = false" disabled="@_backupBusy"
-                        class="flex-1 rounded-full border border-cream-border py-2.5 text-sm font-medium text-ink disabled:opacity-50">@Loc["Common.Cancel"]</button>
-                <button type="button" @onclick="RunBackupAsync" disabled="@_backupBusy"
-                        class="flex-1 rounded-full bg-brick py-2.5 text-sm font-medium text-white disabled:opacity-60">
-                    @(_backupBusy ? Loc["Sync.InProgress"] : Loc["Settings.BackUpNow"])
-                </button>
-            </div>
-        </div>
-    </div>
-}
-
 @if (_toast is not null)
 {
     <div class="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-6">
@@ -262,17 +223,12 @@
     private bool _showShopEdit;
     private bool _showStylePicker;
     private bool _showTextSizePicker;
-    private bool _showBackup;
 
     private string _shopName = string.Empty;
     private string _shopTagline = string.Empty;
     private string _shopCity = string.Empty;
 
-    private string _email = string.Empty;
-    private string _password = string.Empty;
     private bool _backupBusy;
-    private string? _backupError;
-
     private string? _toast;
 
     protected override void OnInitialized()
@@ -371,46 +327,40 @@
         _showTextSizePicker = false;
     }
 
-    private void OpenBackup()
+    // Backup needs no login: SyncAsync signs in silently with the shop account.
+    private async Task BackUpNowAsync()
     {
-        _backupError = null;
-        _showBackup = true;
-    }
+        if (_backupBusy)
+            return;
 
-    private async Task RunBackupAsync()
-    {
         _backupBusy = true;
-        _backupError = null;
+        _toast = Loc["Sync.InProgress"];
+        StateHasChanged();
+
+        string message;
         try
         {
-            if (!Auth.IsSignedIn)
-                await Auth.SignInAsync(_email.Trim(), _password);
-
             var result = await Sync.SyncAsync();
             if (result.Success)
             {
                 Prefs.LastBackupUtc = result.CompletedAtUtc;
-                _password = string.Empty;
-                _showBackup = false;
-                await ShowToastAsync(Loc["Sync.Success"]);
+                message = Loc["Sync.Success"];
             }
             else
             {
-                _backupError = result.Error ?? Loc["Sync.Failed"];
+                message = result.Error ?? Loc["Sync.Failed"];
             }
-        }
-        catch (AuthenticationFailedException ex)
-        {
-            _backupError = ex.Message;
         }
         catch (Exception ex)
         {
-            _backupError = ex.Message;
+            message = ex.Message;
         }
         finally
         {
             _backupBusy = false;
         }
+
+        await ShowToastAsync(message);
     }
 
     private async Task ExportPdf() => await ShowToastAsync(Loc["Settings.ComingSoon"]);

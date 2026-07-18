@@ -33,10 +33,15 @@ public static class InfrastructureServiceCollectionExtensions
         // ---- Cloud sync (Phase 5) ----
         // API key is a public client identifier; data access is gated by Auth +
         // Firestore security rules, not by hiding this value.
+        // The shop account below must exist in Firebase Console → Authentication
+        // (Email/Password provider). The app signs in with it silently, so there
+        // is no login screen and all installs share one stable uid.
         services.AddSingleton(new FirebaseOptions
         {
             ApiKey = "AIzaSyC4eb73mljQpnpWk96gv6pPsFPRRMaiXkI",
-            ProjectId = "tailorapp-6b63d"
+            ProjectId = "tailorapp-6b63d",
+            ShopEmail = "shani@gmail.com",
+            ShopPassword = "shani112233$"
         });
 
         // One shared HttpClient for the Firebase REST calls.

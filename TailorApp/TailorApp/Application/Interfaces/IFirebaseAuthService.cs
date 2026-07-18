@@ -28,6 +28,14 @@ public interface IFirebaseAuthService
     /// <summary>Loads any persisted session from secure storage (call at startup).</summary>
     Task<bool> TryRestoreSessionAsync();
 
+    /// <summary>
+    /// Ensures a usable session exists, signing in silently with the configured
+    /// shop account if needed. Returns false when it could not authenticate
+    /// (e.g. offline or bad credentials) — callers should skip cloud work.
+    /// Never throws.
+    /// </summary>
+    Task<bool> EnsureSignedInAsync(CancellationToken cancellationToken = default);
+
     /// <summary>Clears the session and secure storage.</summary>
     Task SignOutAsync();
 }
