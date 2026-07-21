@@ -44,9 +44,6 @@ public sealed class MeasurementSetInput
     [Range(0, 120, ErrorMessage = "Shalwar waist must be between 0 and 120.")]
     public double? ShalwarWaist { get; set; }
 
-    [Range(0, 120, ErrorMessage = "Hip must be between 0 and 120.")]
-    public double? Hip { get; set; }
-
     [Range(0, 120, ErrorMessage = "Thigh width must be between 0 and 120.")]
     public double? ThighWidth { get; set; }
 

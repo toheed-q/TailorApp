@@ -57,7 +57,7 @@
   <data name="Measurement.Length" xml:space="preserve"><value>لمبائی</value></data>
   <data name="Measurement.Chest" xml:space="preserve"><value>چھاتی</value></data>
   <data name="Measurement.Waist" xml:space="preserve"><value>کمر</value></data>
-  <data name="Measurement.Shoulder" xml:space="preserve"><value>کندھا</value></data>
+  <data name="Measurement.Shoulder" xml:space="preserve"><value>کندھا (تیرہ)</value></data>
   <data name="Measurement.SleeveLength" xml:space="preserve"><value>آستین کی لمبائی</value></data>
   <data name="Measurement.Collar" xml:space="preserve"><value>کالر</value></data>
   <data name="Measurement.NeckWidth" xml:space="preserve"><value>گلے کی چوڑائی</value></data>

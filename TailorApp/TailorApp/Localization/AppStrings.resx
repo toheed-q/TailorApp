@@ -57,7 +57,7 @@
   <data name="Measurement.Length" xml:space="preserve"><value>Length</value></data>
   <data name="Measurement.Chest" xml:space="preserve"><value>Chest</value></data>
   <data name="Measurement.Waist" xml:space="preserve"><value>Waist</value></data>
-  <data name="Measurement.Shoulder" xml:space="preserve"><value>Shoulder</value></data>
+  <data name="Measurement.Shoulder" xml:space="preserve"><value>Shoulder (Teera)</value></data>
   <data name="Measurement.SleeveLength" xml:space="preserve"><value>Sleeve length</value></data>
   <data name="Measurement.Collar" xml:space="preserve"><value>Collar</value></data>
   <data name="Measurement.NeckWidth" xml:space="preserve"><value>Neck width</value></data>

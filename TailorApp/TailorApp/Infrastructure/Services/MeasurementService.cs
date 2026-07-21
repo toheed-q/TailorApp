@@ -184,7 +184,6 @@ public sealed class MeasurementService : IMeasurementService
 
         target.ShalwarLength = input.ShalwarLength;
         target.ShalwarWaist = input.ShalwarWaist;
-        target.Hip = input.Hip;
         target.ThighWidth = input.ThighWidth;
         target.PanchaWidth = input.PanchaWidth;
         target.ShalwarStyle = input.ShalwarStyle;
