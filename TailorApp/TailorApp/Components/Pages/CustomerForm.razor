@@ -93,13 +93,9 @@
             <MeasureStepper Label="@Loc["Measurement.Length"]" @bind-Value="_m.KameezLength" />
             <MeasureStepper Label="@Loc["Measurement.Chest"]" @bind-Value="_m.Chest" />
             <MeasureStepper Label="@Loc["Measurement.Waist"]" @bind-Value="_m.Waist" />
-            <MeasureStepper Label="@Loc["Measurement.Hip"]" @bind-Value="_m.KameezHip" />
             <MeasureStepper Label="@Loc["Measurement.Shoulder"]" @bind-Value="_m.Shoulder" />
             <MeasureStepper Label="@Loc["Measurement.SleeveLength"]" @bind-Value="_m.SleeveLength" />
-            <MeasureStepper Label="@Loc["Form.ArmWidth"]" @bind-Value="_m.ArmWidth" />
             <MeasureStepper Label="@Loc["Form.CollarSize"]" @bind-Value="_m.Collar" />
-            <MeasureStepper Label="@Loc["Measurement.NeckWidth"]" @bind-Value="_m.NeckWidth" />
-            <MeasureStepper Label="@Loc["Form.CuffSize"]" @bind-Value="_m.Cuff" />
         </div>
 
         <div class="mt-3 space-y-3">
@@ -263,9 +259,8 @@
 
     private void ApplyMeasurementDefaults()
     {
-        _m.KameezLength = 42; _m.Chest = 40; _m.Waist = 38; _m.KameezHip = 42;
-        _m.Shoulder = 18; _m.SleeveLength = 24; _m.ArmWidth = 16; _m.Collar = 16;
-        _m.NeckWidth = 7; _m.Cuff = 9;
+        _m.KameezLength = 42; _m.Chest = 40; _m.Waist = 38;
+        _m.Shoulder = 18; _m.SleeveLength = 24; _m.Collar = 16;
         _m.FrontPocket = true; _m.SidePocket = false;
         _m.ShalwarLength = 40; _m.ShalwarWaist = 36; _m.Hip = 44; _m.ThighWidth = 28; _m.PanchaWidth = 14;
         _m.ShalwarStyle = Settings.DefaultShalwarStyle;
@@ -277,9 +272,8 @@
         var s = source.Measurements;
 
         _m.Label = s.Label;
-        _m.KameezLength = s.KameezLength; _m.Chest = s.Chest; _m.Waist = s.Waist; _m.KameezHip = s.KameezHip;
-        _m.Shoulder = s.Shoulder; _m.SleeveLength = s.SleeveLength; _m.ArmWidth = s.ArmWidth;
-        _m.Collar = s.Collar; _m.NeckWidth = s.NeckWidth; _m.Cuff = s.Cuff;
+        _m.KameezLength = s.KameezLength; _m.Chest = s.Chest; _m.Waist = s.Waist;
+        _m.Shoulder = s.Shoulder; _m.SleeveLength = s.SleeveLength; _m.Collar = s.Collar;
         _m.FrontPocket = s.FrontPocket; _m.SidePocket = s.SidePocket;
         _m.ShalwarLength = s.ShalwarLength; _m.ShalwarWaist = s.ShalwarWaist; _m.Hip = s.Hip;
         _m.ThighWidth = s.ThighWidth; _m.PanchaWidth = s.PanchaWidth; _m.ShalwarStyle = s.ShalwarStyle;
