@@ -69,7 +69,7 @@ else
         </div>
         <div class="app-card mt-3 divide-y divide-cream-line">
             <DetailRow Label="@Loc["Form.FrontPocket"]" Value="@YesNo(m.FrontPocket)" />
-            <DetailRow Label="@Loc["Form.SidePocket"]" Value="@YesNo(m.SidePocket)" />
+            <DetailRow Label="@Loc["Form.SidePocket"]" Value="@SidePocketLabel(m)" />
         </div>
 
         <!-- Shalwar -->
@@ -136,6 +136,11 @@ else
     }
 
     private string YesNo(bool value) => value ? Loc["Common.Yes"] : Loc["Common.No"];
+
+    private string SidePocketLabel(MeasurementSet m)
+        => m.SidePocket
+            ? $"{Loc["Common.Yes"]} ({(m.SidePocketDouble ? Loc["Form.SidePocketDouble"] : Loc["Form.SidePocketSingle"])})"
+            : Loc["Common.No"];
 
     private string? StyleLabel(ShalwarStyle style)
         => style == ShalwarStyle.Unspecified ? null : Loc[$"Style.{style}"];

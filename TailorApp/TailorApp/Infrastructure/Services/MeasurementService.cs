@@ -181,6 +181,7 @@ public sealed class MeasurementService : IMeasurementService
         target.Collar = input.Collar;
         target.FrontPocket = input.FrontPocket;
         target.SidePocket = input.SidePocket;
+        target.SidePocketDouble = input.SidePocketDouble;
 
         target.ShalwarLength = input.ShalwarLength;
         target.ShalwarWaist = input.ShalwarWaist;

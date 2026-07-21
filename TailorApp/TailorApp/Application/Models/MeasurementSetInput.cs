@@ -37,6 +37,9 @@ public sealed class MeasurementSetInput
 
     public bool SidePocket { get; set; }
 
+    /// <summary>Only used when <see cref="SidePocket"/> is true: false = single, true = double.</summary>
+    public bool SidePocketDouble { get; set; }
+
     // ---- Shalwar (inches) ----
     [Range(0, 120, ErrorMessage = "Shalwar length must be between 0 and 120.")]
     public double? ShalwarLength { get; set; }

@@ -105,6 +105,8 @@
   <data name="Form.Bottom" xml:space="preserve"><value>Bottom (Pancha)</value></data>
   <data name="Form.FrontPocket" xml:space="preserve"><value>Front pocket</value></data>
   <data name="Form.SidePocket" xml:space="preserve"><value>Side pocket</value></data>
+  <data name="Form.SidePocketSingle" xml:space="preserve"><value>Single</value></data>
+  <data name="Form.SidePocketDouble" xml:space="preserve"><value>Double</value></data>
   <data name="Form.ShalwarStyle" xml:space="preserve"><value>Shalwar style</value></data>
   <data name="Form.Design" xml:space="preserve"><value>Design</value></data>
   <data name="Form.SaveCustomer" xml:space="preserve"><value>Save customer</value></data>

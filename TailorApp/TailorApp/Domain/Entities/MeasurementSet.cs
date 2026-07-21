@@ -33,6 +33,9 @@ public class MeasurementSet : EntityBase
     public bool FrontPocket { get; set; }
     public bool SidePocket { get; set; }
 
+    /// <summary>Only meaningful when <see cref="SidePocket"/> is true: false = single, true = double.</summary>
+    public bool SidePocketDouble { get; set; }
+
     // ---- Shalwar ----
     public double? ShalwarLength { get; set; }
     public double? ShalwarWaist { get; set; }

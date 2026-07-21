@@ -101,6 +101,13 @@
         <div class="mt-3 space-y-3">
             <ToggleRow Label="@Loc["Form.FrontPocket"]" Optional="true" @bind-Value="_m.FrontPocket" />
             <ToggleRow Label="@Loc["Form.SidePocket"]" Optional="true" @bind-Value="_m.SidePocket" />
+            @if (_m.SidePocket)
+            {
+                <div class="grid grid-cols-2 gap-1 rounded-full bg-cream-line p-1">
+                    <button type="button" @onclick="() => _m.SidePocketDouble = false" class="@PocketSegClass(!_m.SidePocketDouble)">@Loc["Form.SidePocketSingle"]</button>
+                    <button type="button" @onclick="() => _m.SidePocketDouble = true" class="@PocketSegClass(_m.SidePocketDouble)">@Loc["Form.SidePocketDouble"]</button>
+                </div>
+            }
         </div>
 
         <!-- ===== Shalwar ===== -->
@@ -272,7 +279,7 @@
         _m.Label = s.Label;
         _m.KameezLength = s.KameezLength; _m.Chest = s.Chest; _m.Waist = s.Waist;
         _m.Shoulder = s.Shoulder; _m.SleeveLength = s.SleeveLength; _m.Collar = s.Collar;
-        _m.FrontPocket = s.FrontPocket; _m.SidePocket = s.SidePocket;
+        _m.FrontPocket = s.FrontPocket; _m.SidePocket = s.SidePocket; _m.SidePocketDouble = s.SidePocketDouble;
         _m.ShalwarLength = s.ShalwarLength; _m.ShalwarWaist = s.ShalwarWaist;
         _m.PanchaWidth = s.PanchaWidth; _m.ShalwarStyle = s.ShalwarStyle;
 
@@ -284,6 +291,9 @@
             _m.Design.ButtonStyle = d.ButtonStyle;
         }
     }
+
+    private static string PocketSegClass(bool selected)
+        => "rounded-full py-2 text-sm font-medium " + (selected ? "bg-cream-card text-ink shadow-card" : "text-subtle");
 
     private void SetCollar(CollarDesign value)
         => _m.Design.CollarDesign = _m.Design.CollarDesign == value ? CollarDesign.Unspecified : value;
