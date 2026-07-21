@@ -36,7 +36,6 @@ public class MeasurementSet : EntityBase
     // ---- Shalwar ----
     public double? ShalwarLength { get; set; }
     public double? ShalwarWaist { get; set; }
-    public double? ThighWidth { get; set; }
     public double? PanchaWidth { get; set; }
     public ShalwarStyle ShalwarStyle { get; set; } = ShalwarStyle.Unspecified;
 }
