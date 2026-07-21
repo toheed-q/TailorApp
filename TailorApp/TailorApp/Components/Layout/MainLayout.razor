@@ -13,7 +13,22 @@
     <BottomNav />
 </div>
 
+@if (_showWelcome)
+{
+    <div class="fixed inset-0 z-[100] mx-auto flex max-w-md flex-col items-center justify-center bg-cream px-8 text-center transition-opacity duration-500 @(_welcomeFadingOut ? "opacity-0" : "opacity-100")">
+        <img src="img/logo.png" alt="Shani Tailor" class="w-52 max-w-[68%]" />
+        <h1 class="mt-8 font-serif text-3xl font-bold text-ink">Welcome, Zeeshan</h1>
+        <p class="mt-1 text-sm text-subtle">Let's get stitching</p>
+        <p class="absolute bottom-10 text-[11px] font-semibold uppercase tracking-[0.25em] text-subtle">Shani Tailor</p>
+    </div>
+}
+
 @code {
+    // Shown once per app launch (the layout instance persists across navigations).
+    private static bool _welcomeSeen;
+    private bool _showWelcome = !_welcomeSeen;
+    private bool _welcomeFadingOut;
+
     protected override void OnInitialized()
     {
         Loc.LanguageChanged += OnSettingsChanged;
@@ -22,8 +37,21 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-            await ApplyTextSizeAsync();
+        if (!firstRender)
+            return;
+
+        await ApplyTextSizeAsync();
+
+        if (_showWelcome)
+        {
+            _welcomeSeen = true;
+            await Task.Delay(2200);
+            _welcomeFadingOut = true;
+            StateHasChanged();
+            await Task.Delay(500);
+            _showWelcome = false;
+            StateHasChanged();
+        }
     }
 
     private async Task ApplyTextSizeAsync()
